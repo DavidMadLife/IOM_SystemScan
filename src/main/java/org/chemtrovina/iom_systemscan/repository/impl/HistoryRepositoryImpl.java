@@ -1,4 +1,82 @@
 package org.chemtrovina.iom_systemscan.repository.impl;
 
-public class HistoryRepositoryImpl {
+import org.chemtrovina.iom_systemscan.model.History;
+import org.chemtrovina.iom_systemscan.repository.base.HistoryRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implements HistoryRepository {
+
+    public HistoryRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate, new HistoryRowMapper(), "History"); // "History" là tên bảng trong database
+    }
+
+    @Override
+    public void add(History history) {
+        String sql = "INSERT INTO History (InvoiceId, Date, Time, Maker, MakerPN, SapPN, Quantity, EmployeeId, Status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                history.getInvoiceId(),
+                history.getDate(),
+                history.getTime(),
+                history.getMaker(),
+                history.getMakerPN(),
+                history.getSapPN(),
+                history.getQuantity(),
+                history.getEmployeeId(),
+                history.getStatus()
+        );
+    }
+
+    @Override
+    public void update(History history) {
+        String sql = "UPDATE History SET InvoiceId = ?, Date = ?, Time = ?, Maker = ?, MakerPN = ?, SapPN = ?, " +
+                "Quantity = ?, EmployeeId = ?, Status = ? WHERE Id = ?";
+        jdbcTemplate.update(sql,
+                history.getInvoiceId(),
+                history.getDate(),
+                history.getTime(),
+                history.getMaker(),
+                history.getMakerPN(),
+                history.getSapPN(),
+                history.getQuantity(),
+                history.getEmployeeId(),
+                history.getStatus(),
+                history.getId()
+        );
+    }
+
+    @Override
+    public List<History> findAll() {
+        String sql = "SELECT * FROM History";
+        return jdbcTemplate.query(sql, new HistoryRowMapper());
+    }
+
+    @Override
+    public History findById(Long id) {
+        String sql = "SELECT * FROM History WHERE Id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new HistoryRowMapper());
+    }
+
+    static class HistoryRowMapper implements RowMapper<History> {
+        @Override
+        public History mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new History(
+                    rs.getInt("Id"),
+                    rs.getInt("InvoiceId"),
+                    rs.getDate("Date").toLocalDate(),
+                    rs.getTime("Time").toLocalTime(),
+                    rs.getString("Maker"),
+                    rs.getString("MakerPN"),
+                    rs.getString("SapPN"),
+                    rs.getInt("Quantity"),
+                    rs.getString("EmployeeId"),
+                    rs.getString("Status")
+            );
+        }
+    }
 }

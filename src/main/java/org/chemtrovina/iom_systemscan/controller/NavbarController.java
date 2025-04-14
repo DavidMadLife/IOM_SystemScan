@@ -16,20 +16,36 @@ public class NavbarController {
 
     @FXML
     public void initialize() {
-        btnScanner.setOnAction(e -> navigateTo("/org/chemtrovina/iom_systemscan/view/scanner-feature.fxml", e));
-        btnStatistical.setOnAction(e -> navigateTo("/org/chemtrovina/iom_systemscan/view/statistical-feature.fxml", e));
-        btnInvoice.setOnAction(e -> navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml", e));
+        // Thiết lập trình xử lý sự kiện trực tiếp
+        btnScanner.setOnAction(this::handleScannerButton);
+        btnStatistical.setOnAction(this::handleStatisticalButton);
+        btnInvoice.setOnAction(this::handleInvoiceButton);
+    }
+
+    private void handleScannerButton(ActionEvent event) {
+        navigateTo("/org/chemtrovina/iom_systemscan/view/scanner-feature.fxml", event);
+    }
+
+    private void handleStatisticalButton(ActionEvent event) {
+        navigateTo("/org/chemtrovina/iom_systemscan/view/statistical-feature.fxml", event);
+    }
+
+    private void handleInvoiceButton(ActionEvent event) {
+        navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml", event);
     }
 
     private void navigateTo(String fxmlPath, ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+
+            // Lấy Stage hiện tại (không tạo mới)
+            Stage currentStage = (Stage) btnScanner.getScene().getWindow(); // Hoặc dùng event.getSource()
+            currentStage.setScene(new Scene(root));
+            currentStage.show();
         } catch (Exception ex) {
             ex.printStackTrace();
+            System.err.println("Lỗi khi chuyển trang: " + fxmlPath);
         }
     }
 }
