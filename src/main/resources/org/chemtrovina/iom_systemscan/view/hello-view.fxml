@@ -5,11 +5,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="435.0" prefWidth="403.0" spacing="20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="org.chemtrovina.iom_systemscan.controller.MainController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<BorderPane fx:id="mainLayout" xmlns:fx="http://javafx.com/fxml" fx:controller="org.chemtrovina.iom_systemscan.controller.MainController">
+    <top>
+        <fx:include source="navbar.fxml" />
+    </top>
+    <center>
+        <AnchorPane fx:id="mainContentPane" />
+    </center>
+</BorderPane>
 
-    <Label fx:id="welcomeText" />
-    <Button onAction="#onHelloButtonClick" text="Damm" underline="true" />
-</VBox>

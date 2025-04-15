@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GenericRepository<T> {
-    T findById(Long id);
+    T findById(int id);
     List<T> findAll();
     void add(T entity);
     void update(T entity);
-    void delete(Long id);
+    void delete(int id);
 }

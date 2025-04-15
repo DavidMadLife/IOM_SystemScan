@@ -21,4 +21,6 @@ module org.chemtrovina.iom_systemscan {
     exports org.chemtrovina.iom_systemscan.repository.base;
     exports org.chemtrovina.iom_systemscan.repository.impl;
     exports org.chemtrovina.iom_systemscan.service;
+    opens org.chemtrovina.iom_systemscan.dto to javafx.base;
+
 }

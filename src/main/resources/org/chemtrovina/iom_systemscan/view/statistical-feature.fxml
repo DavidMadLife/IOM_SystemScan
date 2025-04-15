@@ -6,7 +6,6 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -17,17 +16,16 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="832.0" prefWidth="1280.0" style="-fx-background-color: #456F92;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/ 1" fx:controller="org.chemtrovina.iom_systemscan.controller.ScannerController">
+<AnchorPane prefHeight="832.0" prefWidth="1280.0" style="-fx-background-color: #456F92;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.chemtrovina.iom_systemscan.controller.StatisticalFeatureController">
    <children>
       <fx:include source="navbar.fxml" />
-      <TableView fixedCellSize="0.0" layoutX="471.0" layoutY="70.0" prefHeight="696.0" prefWidth="809.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="70.0">
+      <TableView fx:id="historyDateTableView" fixedCellSize="0.0" layoutX="471.0" layoutY="70.0" prefHeight="696.0" prefWidth="809.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="70.0">
         <columns>
-          <TableColumn id="NoColumn" prefWidth="45.0" text="No" />
-          <TableColumn id="MakerColumn" prefWidth="153.0" text="Maker" />
-            <TableColumn id="MakerPNColumn" prefWidth="197.0" text="Maker P/N" />
-            <TableColumn id="SAPPNColumn" prefWidth="197.0" text="SAP P/N" />
-            <TableColumn id="ReelColumn" prefWidth="74.0" text="Reel" />
-            <TableColumn id="QuantityColumn" prefWidth="142.0" text="Quantity" />
+            <TableColumn fx:id="dateColumn" prefWidth="138.0" text="Date" />
+          <TableColumn fx:id="makerColumn" prefWidth="129.0" text="Maker" />
+            <TableColumn fx:id="makerPNColumn" prefWidth="210.0" text="Maker P/N" />
+            <TableColumn fx:id="sapPNColumn" prefWidth="200.0" text="SAP P/N" />
+            <TableColumn fx:id="quantityColumn" prefWidth="131.0" text="Quantity" />
         </columns>
       </TableView>
       <Pane layoutX="26.0" layoutY="180.0" prefHeight="396.0" prefWidth="415.0" style="-fx-background-color: #B9B9B9;">
@@ -41,8 +39,8 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <TextField id="invoiceNoField " prefHeight="33.0" prefWidth="217.0" />
-                        <CheckBox id="InvoiceNoCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
+                        <TextField fx:id="invoiceNoField" prefHeight="33.0" prefWidth="217.0" />
+                        <CheckBox fx:id="invoiceNoCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="109.0" prefHeight="33.0" prefWidth="401.0" style="-fx-spacing: 30;">
@@ -52,8 +50,8 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <DatePicker prefHeight="25.0" prefWidth="218.0" />
-                        <CheckBox id="DateCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
+                        <DatePicker fx:id="dateTimePicker" prefHeight="25.0" prefWidth="218.0" />
+                        <CheckBox fx:id="dateCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="76.0" prefHeight="33.0" prefWidth="401.0" style="-fx-spacing: 30;">
@@ -63,8 +61,8 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <TextField id="SAPField" prefHeight="33.0" prefWidth="217.0" />
-                        <CheckBox id="SAPCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
+                        <TextField fx:id="sapField" prefHeight="33.0" prefWidth="217.0" />
+                        <CheckBox fx:id="sapCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="43.0" prefHeight="33.0" prefWidth="401.0" style="-fx-spacing: 30;">
@@ -74,8 +72,8 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <TextField id="PNField" prefHeight="33.0" prefWidth="217.0" />
-                        <CheckBox id="PNCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
+                        <TextField fx:id="pnField" prefHeight="33.0" prefWidth="217.0" />
+                        <CheckBox fx:id="pnCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="10.0" prefHeight="33.0" prefWidth="401.0" style="-fx-spacing: 30;">
@@ -85,13 +83,13 @@
                               <Font size="18.0" />
                            </font>
                         </Text>
-                        <TextField id="MakerField" prefHeight="33.0" prefWidth="217.0" />
-                        <CheckBox id="MakerCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
+                        <TextField fx:id="makerField" prefHeight="33.0" prefWidth="217.0" />
+                        <CheckBox fx:id="makerCheckBox" mnemonicParsing="false" prefHeight="33.0" prefWidth="18.0" />
                      </children>
                   </HBox>
                </children>
             </VBox>
-            <Button id="SearchBtn" layoutX="196.0" layoutY="332.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="200.0" style="-fx-background-color: #BF3C3C; -fx-font-weight: Bold;" text="Search" textFill="WHITE">
+            <Button fx:id="searchBtn" layoutX="196.0" layoutY="332.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="200.0" style="-fx-background-color: #BF3C3C; -fx-font-weight: Bold;" text="Search" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
@@ -122,7 +120,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <Text layoutX="10.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Text id="reelText" layoutX="10.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <font>
                   <Font size="20.0" />
                </font>
@@ -132,7 +130,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <Text layoutX="10.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <Text id="reelQuantity" layoutX="10.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <font>
                   <Font size="20.0" />
                </font>

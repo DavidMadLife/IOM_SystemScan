@@ -19,7 +19,7 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     }
 
     @Override
-    public T findById(Long id) {
+    public T findById(int id) {
         String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, rowMapper);
     }
@@ -41,7 +41,7 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(int id) {
         String sql = "DELETE FROM " + tableName + " WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

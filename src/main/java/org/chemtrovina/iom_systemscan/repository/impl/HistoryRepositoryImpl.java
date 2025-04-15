@@ -2,11 +2,13 @@ package org.chemtrovina.iom_systemscan.repository.impl;
 
 import org.chemtrovina.iom_systemscan.model.History;
 import org.chemtrovina.iom_systemscan.repository.base.HistoryRepository;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implements HistoryRepository {
@@ -57,10 +59,49 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
     }
 
     @Override
-    public History findById(Long id) {
+    public History findById(int id) {
         String sql = "SELECT * FROM History WHERE Id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, new HistoryRowMapper());
     }
+
+    @Override
+    public List<History> search(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT h.* FROM History h LEFT JOIN Invoice i ON h.InvoiceId = i.Id WHERE 1=1 "
+        );
+
+        // Danh sách parameter
+        List<Object> params = new java.util.ArrayList<>();
+
+        if (invoiceNo != null && !invoiceNo.isBlank()) {
+            sql.append("AND i.InvoiceNo = ? ");
+            params.add(invoiceNo);
+        }
+
+        if (maker != null && !maker.isBlank()) {
+            sql.append("AND h.Maker = ? ");
+            params.add(maker);
+        }
+
+        if (makerPN != null && !makerPN.isBlank()) {
+            sql.append("AND h.MakerPN = ? ");
+            params.add(makerPN);
+        }
+
+        if (sapPN != null && !sapPN.isBlank()) {
+            sql.append("AND h.SapPN = ? ");
+            params.add(sapPN);
+        }
+
+        if (date != null) {
+            sql.append("AND h.Date = ? ");
+            params.add(date);
+        }
+
+        return jdbcTemplate.query(sql.toString(), params.toArray(), new HistoryRowMapper());
+    }
+
+
 
     static class HistoryRowMapper implements RowMapper<History> {
         @Override

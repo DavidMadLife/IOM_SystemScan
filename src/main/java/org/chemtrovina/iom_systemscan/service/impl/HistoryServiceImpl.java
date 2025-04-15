@@ -1,5 +1,6 @@
 package org.chemtrovina.iom_systemscan.service.impl;
 
+import org.chemtrovina.iom_systemscan.dto.HistorySummaryViewModel;
 import org.chemtrovina.iom_systemscan.model.History;
 import org.chemtrovina.iom_systemscan.model.MOQ;
 import org.chemtrovina.iom_systemscan.repository.base.HistoryRepository;
@@ -12,9 +13,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class HistoryServiceImpl implements HistoryService {
+public class  HistoryServiceImpl implements HistoryService {
 
     private final HistoryRepository historyRepository;
     private final MOQRepository moqRepository;
@@ -41,7 +43,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public Optional<History> getHistoryById(Long id) {
+    public Optional<History> getHistoryById(int id) {
         return Optional.ofNullable(historyRepository.findById(id));
     }
 
@@ -81,5 +83,45 @@ public class HistoryServiceImpl implements HistoryService {
             System.out.println("Không tìm thấy MOQ cho Maker Part Number: " + makerPN);
         }
     }
+
+    @Override
+    public void deleteById(int id) {
+        historyRepository.delete(id);
+    }
+
+    @Override
+    public List<HistorySummaryViewModel> getSummaryBySapPN() {
+        List<History> histories = historyRepository.findAll();
+
+        return histories.stream()
+                .collect(Collectors.groupingBy(History::getSapPN))
+                .entrySet().stream()
+                .map(entry -> {
+                    String sapPN = entry.getKey();
+                    List<History> group = entry.getValue();
+
+                    LocalDate latestDate = group.stream()
+                            .map(History::getDate)
+                            .max(LocalDate::compareTo)
+                            .orElse(null);
+
+                    int reelCount = group.size();
+                    int totalQuantity = group.stream().mapToInt(History::getQuantity).sum();
+
+                    return new HistorySummaryViewModel(sapPN, latestDate, reelCount, totalQuantity);
+                })
+                .toList();
+    }
+
+    @Override
+    public boolean isValidMakerPN(String makerPN) {
+        return moqRepository.findByMakerPN(makerPN) != null;
+    }
+
+    @Override
+    public List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date) {
+        return historyRepository.search(invoiceNo, maker, makerPN, sapPN, date);
+    }
+
 
 }
