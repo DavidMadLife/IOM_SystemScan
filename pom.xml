@@ -111,8 +111,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.chemtrovina.iom_systemscan/org.chemtrovina.iom_systemscan.App
-                            </mainClass>
+                            <mainClass>org.chemtrovina.demo/org.chemtrovina.demo.App</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

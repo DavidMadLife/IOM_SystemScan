@@ -55,8 +55,8 @@ public class StatisticalFeatureController {
         // Gán các cột với property trong HistoryEntrance
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date")); // cần có field date dạng String
         makerColumn.setCellValueFactory(new PropertyValueFactory<>("maker"));
-        makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPartNumber"));
-        sapPNColumn.setCellValueFactory(new PropertyValueFactory<>("sapPartNumber"));
+        makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPN"));
+        sapPNColumn.setCellValueFactory(new PropertyValueFactory<>("sapPN"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
         DataSource dataSource = DataSourceConfig.getDataSource();

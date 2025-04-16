@@ -115,6 +115,8 @@ public class ScannerController {
             statusLabel.setStyle("-fx-background-color: gray; -fx-text-fill: white;");
             disableAllButtons();
             scanButton.setDisable(false);
+            makerPNField.requestFocus();
+            makerPNField.selectAll();
             return;
         }
 
@@ -208,6 +210,8 @@ public class ScannerController {
         btnReScan.setDisable(true);
         scanButton.setDisable(false);
         btnAgain.setDisable(false);
+        makerPNField.requestFocus();
+        makerPNField.selectAll();
     }
 
 
