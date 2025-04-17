@@ -89,7 +89,7 @@ public class ScannerController {
         scanButton.setDisable(false);
     }
 
-    private void loadSummaryTable() {
+    /*private void loadSummaryTable() {
         List<HistorySummaryViewModel> summaries = historyService.getSummaryBySapPN();
         List<HistorySummaryViewModel> sortedSummaries = summaries.stream()
                 .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
@@ -97,7 +97,7 @@ public class ScannerController {
                 .toList();
         summaryObservableList.setAll(sortedSummaries);
         historyTableView.setItems(summaryObservableList);
-    }
+    }*/
 
 
     private void handleScan() {
