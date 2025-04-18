@@ -18,7 +18,7 @@
          <children>
             <HBox alignment="CENTER" layoutX="47.0" layoutY="637.0" prefHeight="100.0" prefWidth="572.0" style="-fx-spacing: 30;">
                <children>
-                  <Button fx:id ="btnAgain" mnemonicParsing="false" prefHeight="80.0" prefWidth="167.0" style="-fx-font-weight: Bold; -fx-background-color: #DD2426;" text="Again" textFill="WHITE">
+                  <Button fx:id="btnAgain" mnemonicParsing="false" prefHeight="80.0" prefWidth="167.0" style="-fx-font-weight: Bold; -fx-background-color: #DD2426;" text="Again" textFill="WHITE">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -63,7 +63,7 @@
             </Pane>
             <HBox alignment="CENTER" layoutX="33.0" layoutY="146.0" prefHeight="24.0" prefWidth="500.0" spacing="10.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Input MakerPN" textAlignment="CENTER" wrappingWidth="167.13671875">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Input MakerPN" wrappingWidth="167.13671875">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -72,15 +72,24 @@
                   <Button fx:id="scanButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #B02F2B;" text="Scan" textFill="WHITE" />
                </children>
             </HBox>
-            <HBox alignment="CENTER" layoutX="33.0" layoutY="119.0" prefHeight="24.0" prefWidth="500.0" spacing="10.0">
+            <HBox alignment="CENTER" layoutX="34.0" layoutY="92.0" prefHeight="27.0" prefWidth="405.0" spacing="10.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Input EmployeeId" textAlignment="CENTER" wrappingWidth="167.13671875">
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Input EmployeeId" wrappingWidth="167.13671875">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Text>
                   <TextField fx:id="employeeIdField" prefHeight="25.0" prefWidth="216.0" />
-                  <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #8F88F2;" text="Save" textFill="WHITE" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="34.0" layoutY="119.0" prefHeight="27.0" prefWidth="405.0" spacing="10.0">
+               <children>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Input ScanCode" wrappingWidth="167.13671875">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="scanCodeField" prefHeight="25.0" prefWidth="216.0" />
                </children>
             </HBox>
          </children>

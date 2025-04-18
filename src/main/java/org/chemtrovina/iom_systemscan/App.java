@@ -20,7 +20,10 @@ public class App extends  javafx.application.Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("view/scanner-feature.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1280, 832);
-        stage.setTitle("Hello!");
+        stage.setTitle("IOM Sytem Scan");
+        stage.getIcons().add(new javafx.scene.image.Image(
+                App.class.getResourceAsStream("asserts/logo.png")
+        ));
         stage.setScene(scene);
         stage.show();
 

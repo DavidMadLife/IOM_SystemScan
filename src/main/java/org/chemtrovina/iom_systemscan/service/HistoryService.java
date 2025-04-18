@@ -17,11 +17,13 @@ public interface HistoryService {
     Optional<History> getHistoryById(int id);
 
     List<History> searchHistory(LocalDate date, String sapPN, String status);
-    void createHistoryForScannedMakePN(String makerPN, String employeeId);
+    void createHistoryForScannedMakePN(String makerPN, String employeeId, String scanCode);
     void deleteById(int id);
 
     List<HistorySummaryViewModel> getSummaryBySapPN();
     boolean isValidMakerPN(String makerPN);
 
     List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date);
+
+    boolean isScanning(String scanCode);
 }

@@ -14,13 +14,14 @@ public class History {
     private int quantity;
     private String employeeId;
     private String status;
+    private String scanCode;
 
     public History() {
     }
 
     public History(int id, Integer invoiceId, LocalDate date, LocalTime time,
                    String maker, String makerPN, String sapPN, int quantity,
-                   String employeeId, String status) {
+                   String employeeId, String status, String scanCode) {
         this.id = id;
         this.invoiceId = invoiceId;
         this.date = date;
@@ -31,6 +32,7 @@ public class History {
         this.quantity = quantity;
         this.employeeId = employeeId;
         this.status = status;
+        this.scanCode = scanCode;
     }
 
     // Getter và Setter methods
@@ -113,6 +115,15 @@ public class History {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getScanCode() {
+        return scanCode;
+    }
+
+    public void setScanCode(String scanCode) {
+        this.scanCode = scanCode;
+    }
+
 
     @Override
     public String toString() {

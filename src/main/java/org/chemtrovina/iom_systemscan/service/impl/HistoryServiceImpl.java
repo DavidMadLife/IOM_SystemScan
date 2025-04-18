@@ -56,7 +56,7 @@ public class  HistoryServiceImpl implements HistoryService {
                 .toList();
     }
     @Override
-    public void createHistoryForScannedMakePN(String makerPN, String employeeId) {
+    public void createHistoryForScannedMakePN(String makerPN, String employeeId, String scanCode) {
         // Tìm MOQ trong bảng MOQ theo sapPN
         MOQ moq = moqRepository.findByMakerPN(makerPN);
 
@@ -74,6 +74,7 @@ public class  HistoryServiceImpl implements HistoryService {
             history.setDate(currentDate);
             history.setTime(currentTime);
             history.setEmployeeId(employeeId);
+            history.setScanCode(scanCode);
             history.setStatus("Scanned");
 
             // Lưu vào bảng History
@@ -121,6 +122,11 @@ public class  HistoryServiceImpl implements HistoryService {
     @Override
     public List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date) {
         return historyRepository.search(invoiceNo, maker, makerPN, sapPN, date);
+    }
+
+    @Override
+    public boolean isScanning(String scanCode) {
+        return historyRepository.existsByScanCode(scanCode);
     }
 
 

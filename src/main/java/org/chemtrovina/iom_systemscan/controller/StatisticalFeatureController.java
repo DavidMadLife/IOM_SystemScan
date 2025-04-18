@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.text.Text;
 import org.chemtrovina.iom_systemscan.config.DataSourceConfig;
 import org.chemtrovina.iom_systemscan.model.History;
 import org.chemtrovina.iom_systemscan.repository.base.HistoryRepository;
@@ -14,7 +15,7 @@ import org.chemtrovina.iom_systemscan.repository.impl.MOQRepositoryImpl;
 import org.chemtrovina.iom_systemscan.service.HistoryService;
 import org.chemtrovina.iom_systemscan.service.impl.HistoryServiceImpl;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.w3c.dom.Text;
+
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class StatisticalFeatureController {
     @FXML private TableColumn<History, String> makerPNColumn;
     @FXML private TableColumn<History, String> sapPNColumn;
     @FXML private TableColumn<History, Integer> quantityColumn;
+    @FXML private TableColumn<History, String> scanCodeColumn;
 
     @FXML private TextField invoiceNoField;
     @FXML private TextField makerField;
@@ -58,6 +60,7 @@ public class StatisticalFeatureController {
         makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPN"));
         sapPNColumn.setCellValueFactory(new PropertyValueFactory<>("sapPN"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        scanCodeColumn.setCellValueFactory(new PropertyValueFactory<>("scanCode"));
 
         DataSource dataSource = DataSourceConfig.getDataSource();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -83,7 +86,7 @@ public class StatisticalFeatureController {
         int totalReels = result.size();
         int totalQuantity = result.stream().mapToInt(History::getQuantity).sum();
 
-        reelText.setTextContent(String.valueOf(totalReels));
-        quantityText.setTextContent(String.valueOf(totalQuantity));
+        reelText.setText(String.valueOf(totalReels));
+        quantityText.setText(String.valueOf(totalQuantity));
     }
 }

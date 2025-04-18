@@ -19,25 +19,8 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
 
     @Override
     public void add(History history) {
-        String sql = "INSERT INTO History (InvoiceId, Date, Time, Maker, MakerPN, SapPN, Quantity, EmployeeId, Status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                history.getInvoiceId(),
-                history.getDate(),
-                history.getTime(),
-                history.getMaker(),
-                history.getMakerPN(),
-                history.getSapPN(),
-                history.getQuantity(),
-                history.getEmployeeId(),
-                history.getStatus()
-        );
-    }
-
-    @Override
-    public void update(History history) {
-        String sql = "UPDATE History SET InvoiceId = ?, Date = ?, Time = ?, Maker = ?, MakerPN = ?, SapPN = ?, " +
-                "Quantity = ?, EmployeeId = ?, Status = ? WHERE Id = ?";
+        String sql = "INSERT INTO History (InvoiceId, Date, Time, Maker, MakerPN, SapPN, Quantity, EmployeeId, Status, ScanCode) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 history.getInvoiceId(),
                 history.getDate(),
@@ -48,6 +31,25 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
                 history.getQuantity(),
                 history.getEmployeeId(),
                 history.getStatus(),
+                history.getScanCode()
+        );
+    }
+
+    @Override
+    public void update(History history) {
+        String sql = "UPDATE History SET InvoiceId = ?, Date = ?, Time = ?, Maker = ?, MakerPN = ?, SapPN = ?, " +
+                "Quantity = ?, EmployeeId = ?, Status = ?,  ScanCode = ? WHERE Id = ?";
+        jdbcTemplate.update(sql,
+                history.getInvoiceId(),
+                history.getDate(),
+                history.getTime(),
+                history.getMaker(),
+                history.getMakerPN(),
+                history.getSapPN(),
+                history.getQuantity(),
+                history.getEmployeeId(),
+                history.getStatus(),
+                history.getScanCode(),
                 history.getId()
         );
     }
@@ -101,6 +103,14 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
         return jdbcTemplate.query(sql.toString(), params.toArray(), new HistoryRowMapper());
     }
 
+    @Override
+    public boolean existsByScanCode(String scanCode) {
+        String sql = "SELECT COUNT(*) FROM History WHERE ScanCode = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, scanCode);
+        return count != null && count > 0;
+    }
+
+
 
 
     static class HistoryRowMapper implements RowMapper<History> {
@@ -116,7 +126,8 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
                     rs.getString("SapPN"),
                     rs.getInt("Quantity"),
                     rs.getString("EmployeeId"),
-                    rs.getString("Status")
+                    rs.getString("Status"),
+                    rs.getString("ScanCode")
             );
         }
     }

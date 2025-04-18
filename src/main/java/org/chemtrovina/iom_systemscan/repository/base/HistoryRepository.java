@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HistoryRepository extends GenericRepository<History> {
     List<History> search(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date);
+    boolean existsByScanCode(String scanCode);
 }

@@ -21,11 +21,12 @@
       <fx:include source="navbar.fxml" />
       <TableView fx:id="historyDateTableView" fixedCellSize="0.0" layoutX="471.0" layoutY="70.0" prefHeight="696.0" prefWidth="809.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="70.0">
         <columns>
-            <TableColumn fx:id="dateColumn" prefWidth="138.0" text="Date" />
-          <TableColumn fx:id="makerColumn" prefWidth="129.0" text="Maker" />
-            <TableColumn fx:id="makerPNColumn" prefWidth="210.0" text="Maker P/N" />
-            <TableColumn fx:id="sapPNColumn" prefWidth="200.0" text="SAP P/N" />
-            <TableColumn fx:id="quantityColumn" prefWidth="131.0" text="Quantity" />
+            <TableColumn fx:id="dateColumn" prefWidth="117.0" text="Date" />
+            <TableColumn fx:id="scanCodeColumn" prefWidth="125.0" text="Scan Code" />
+            <TableColumn fx:id="makerColumn" prefWidth="123.0" text="Maker" />
+            <TableColumn fx:id="makerPNColumn" prefWidth="170.0" text="Maker P/N" />
+            <TableColumn fx:id="sapPNColumn" prefWidth="142.0" text="SAP P/N" />
+            <TableColumn fx:id="quantityColumn" maxWidth="500.0" prefWidth="130.0" text="Quantity" />
         </columns>
       </TableView>
       <Pane layoutX="26.0" layoutY="180.0" prefHeight="396.0" prefWidth="415.0" style="-fx-background-color: #B9B9B9;">
@@ -120,7 +121,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <Text id="reelText" layoutX="10.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Text fx:id="reelText" layoutX="10.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <font>
                   <Font size="20.0" />
                </font>
@@ -130,7 +131,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <Text id="reelQuantity" layoutX="10.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <Text fx:id="quantityText" layoutX="10.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <font>
                   <Font size="20.0" />
                </font>

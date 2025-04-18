@@ -34,6 +34,7 @@ public class ScannerController {
 
     @FXML private TextField employeeIdField;
     @FXML private TextField makerPNField;
+    @FXML private TextField scanCodeField;
     @FXML private Button scanButton;
     @FXML private Label statusLabel;
     @FXML private TableView<HistorySummaryViewModel> historyTableView;
@@ -47,6 +48,7 @@ public class ScannerController {
 
     private String currentMakerPN = null;
     private String currentEmployeeId = null;
+    private String currentScanCode = null;
     private boolean isScanning = false;
     private History lastScannedHistory = null; // mã A
     private History pendingHistory = null;     // mã B
@@ -81,7 +83,17 @@ public class ScannerController {
         btnContinue.setOnAction(e -> handleContinue());
         btnReScan.setOnAction(e -> handleReScan());
         btnAgain.setOnAction(e -> handleAgain());
-        makerPNField.setOnAction(e -> handleScan());
+
+        employeeIdField.setOnAction(e -> scanCodeField.requestFocus());
+
+        scanCodeField.setOnAction(e -> makerPNField.requestFocus());
+
+        makerPNField.setOnAction(e -> {
+            String status = statusLabel.getText();
+            if (!"Duplicate".equalsIgnoreCase(status) && !"NG".equalsIgnoreCase(status)) {
+                handleScan();
+            }
+        });
 
 
         historyTableView.setItems(recentScansList);
@@ -89,20 +101,11 @@ public class ScannerController {
         scanButton.setDisable(false);
     }
 
-    /*private void loadSummaryTable() {
-        List<HistorySummaryViewModel> summaries = historyService.getSummaryBySapPN();
-        List<HistorySummaryViewModel> sortedSummaries = summaries.stream()
-                .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
-                .limit(2) // lấy 2 mã gần nhất
-                .toList();
-        summaryObservableList.setAll(sortedSummaries);
-        historyTableView.setItems(summaryObservableList);
-    }*/
-
 
     private void handleScan() {
         String employeeId = employeeIdField.getText().trim();
         String makerPN = makerPNField.getText().trim();
+        String scanCode = scanCodeField.getText().trim();
 
         if (employeeId.isEmpty() || makerPN.isEmpty()) {
             statusLabel.setText("Missing input");
@@ -120,9 +123,30 @@ public class ScannerController {
             return;
         }
 
+        if (historyService.isScanning(scanCode)) {
+            statusLabel.setText("Duplicate");
+            statusLabel.setStyle("-fx-background-color: yellow; -fx-text-fill: white;");
+
+
+            historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
+            List<History> updated = historyService.getAllHistory();
+            pendingHistory = updated.get(updated.size() - 1);
+
+            updateRecentScans(pendingHistory);
+
+
+            disableAllButtons();  // Ngừng mọi thao tác khác cho đến khi xử lý
+            btnReScan.setDisable(false);
+            btnAgain.setDisable(false);
+            scanCodeField.requestFocus();
+            scanCodeField.selectAll();
+            //scanCodeField.setOnAction(e -> handleScan());
+            return;
+        }
+
         // Nếu đang scan mã A mà nhập mã B
         if (isScanning && !makerPN.equals(currentMakerPN)) {
-            historyService.createHistoryForScannedMakePN(makerPN, employeeId);
+            historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
             List<History> updated = historyService.getAllHistory();
             pendingHistory = updated.get(updated.size() - 1);
 
@@ -134,11 +158,13 @@ public class ScannerController {
             btnAgain.setDisable(true);
             btnContinue.setDisable(false);
             btnReScan.setDisable(false);
+            makerPNField.requestFocus();
+            makerPNField.selectAll();
             return;
         }
 
         // Scan mã đầu tiên
-        historyService.createHistoryForScannedMakePN(makerPN, employeeId);
+        historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
         List<History> updated = historyService.getAllHistory();
 
         lastScannedHistory = updated.get(updated.size() - 1);
@@ -153,7 +179,8 @@ public class ScannerController {
         disableAllButtons();
         scanButton.setDisable(false);
 
-        makerPNField.clear();
+        scanCodeField.requestFocus();
+        scanCodeField.selectAll();
     }
 
     private void handleContinue() {
@@ -180,6 +207,17 @@ public class ScannerController {
     }
 
     private void handleReScan() {
+        if ("Duplicate".equalsIgnoreCase(statusLabel.getText())) {
+            scanCodeField.requestFocus();
+            scanCodeField.selectAll();
+        }
+
+        if ("NG".equalsIgnoreCase(statusLabel.getText())) {
+            makerPNField.requestFocus();
+            makerPNField.selectAll();
+        }
+
+
         if (pendingHistory != null) {
             historyService.deleteById(pendingHistory.getId());
 
@@ -204,14 +242,13 @@ public class ScannerController {
             pendingHistory = null;
         }
 
-        statusLabel.setText("Good");
-        statusLabel.setStyle("-fx-background-color: #32CD32;");
+        statusLabel.setText("None");
+        statusLabel.setStyle("-fx-background-color: gray; -fx-text-fill: white;");
         btnContinue.setDisable(true);
         btnReScan.setDisable(true);
         scanButton.setDisable(false);
-        btnAgain.setDisable(false);
-        makerPNField.requestFocus();
-        makerPNField.selectAll();
+        btnAgain.setDisable(true);
+
     }
 
 
@@ -221,6 +258,7 @@ public class ScannerController {
         // Nếu cần cho scan lại cùng mã hiện tại
         employeeIdField.setText(currentEmployeeId);
         makerPNField.setText(currentMakerPN);
+        scanCodeField.setText(currentScanCode);
         scanButton.setDisable(false);
         statusLabel.setText("None");
         statusLabel.setStyle("-fx-background-color: #5B5B5B;");
@@ -237,11 +275,6 @@ public class ScannerController {
         btnContinue.setDisable(true);
         btnReScan.setDisable(true);
     }
-
-    /*private void updateHistoryTable(List<History> historyList) {
-        ObservableList<History> observableHistory = FXCollections.observableArrayList(historyList);
-        historyTableView.setItems(observableHistory);
-    }*/
 
 
     private void updateRecentScans(History lastScannedHistory) {
