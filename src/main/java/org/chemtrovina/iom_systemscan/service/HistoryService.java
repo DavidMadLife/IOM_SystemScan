@@ -25,5 +25,5 @@ public interface HistoryService {
 
     List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date);
 
-    boolean isScanning(String scanCode);
+    boolean isScanning(String scanCode, String makerPN);
 }

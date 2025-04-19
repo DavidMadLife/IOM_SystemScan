@@ -18,7 +18,7 @@
 
 <AnchorPane prefHeight="832.0" prefWidth="1280.0" style="-fx-background-color: #456F92;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.chemtrovina.iom_systemscan.controller.StatisticalFeatureController">
    <children>
-      <fx:include source="navbar.fxml" />
+      <!--<fx:include source="navbar.fxml" />-->
       <TableView fx:id="historyDateTableView" fixedCellSize="0.0" layoutX="471.0" layoutY="70.0" prefHeight="696.0" prefWidth="809.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="70.0">
         <columns>
             <TableColumn fx:id="dateColumn" prefWidth="117.0" text="Date" />

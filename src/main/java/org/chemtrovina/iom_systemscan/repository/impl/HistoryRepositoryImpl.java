@@ -104,9 +104,9 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
     }
 
     @Override
-    public boolean existsByScanCode(String scanCode) {
-        String sql = "SELECT COUNT(*) FROM History WHERE ScanCode = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, scanCode);
+    public boolean existsByScanCodeAndMakerPN(String scanCode, String makerPN) {
+        String sql = "SELECT COUNT(*) FROM History WHERE ScanCode = ? AND MakerPN = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, scanCode, makerPN);
         return count != null && count > 0;
     }
 

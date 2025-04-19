@@ -103,85 +103,30 @@ public class ScannerController {
 
 
     private void handleScan() {
-        String employeeId = employeeIdField.getText().trim();
-        String makerPN = makerPNField.getText().trim();
-        String scanCode = scanCodeField.getText().trim();
+        if (!validateInputs()) return;
 
-        if (employeeId.isEmpty() || makerPN.isEmpty()) {
-            statusLabel.setText("Missing input");
-            statusLabel.setStyle("-fx-background-color: orange;");
+        currentEmployeeId = employeeIdField.getText().trim();
+        currentMakerPN = makerPNField.getText().trim();
+        currentScanCode = scanCodeField.getText().trim();
+
+        if (!historyService.isValidMakerPN(currentMakerPN)) {
+            handleNotFound();
             return;
         }
 
-        if (!historyService.isValidMakerPN(makerPN)) {
-            statusLabel.setText("NOT FOUND");
-            statusLabel.setStyle("-fx-background-color: gray; -fx-text-fill: white;");
-            disableAllButtons();
-            scanButton.setDisable(false);
-            makerPNField.requestFocus();
-            makerPNField.selectAll();
+        if (historyService.isScanning(currentScanCode, currentMakerPN)) {
+            handleDuplicate();
             return;
         }
 
-        if (historyService.isScanning(scanCode)) {
-            statusLabel.setText("Duplicate");
-            statusLabel.setStyle("-fx-background-color: yellow; -fx-text-fill: white;");
-
-
-            historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
-            List<History> updated = historyService.getAllHistory();
-            pendingHistory = updated.get(updated.size() - 1);
-
-            updateRecentScans(pendingHistory);
-
-
-            disableAllButtons();  // Ngừng mọi thao tác khác cho đến khi xử lý
-            btnReScan.setDisable(false);
-            btnAgain.setDisable(false);
-            scanCodeField.requestFocus();
-            scanCodeField.selectAll();
-            //scanCodeField.setOnAction(e -> handleScan());
+        if (isScanning && !currentMakerPN.equals(lastScannedHistory.getMakerPN())) {
+            handleWrongScan();
             return;
         }
 
-        // Nếu đang scan mã A mà nhập mã B
-        if (isScanning && !makerPN.equals(currentMakerPN)) {
-            historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
-            List<History> updated = historyService.getAllHistory();
-            pendingHistory = updated.get(updated.size() - 1);
-
-            updateRecentScans(pendingHistory);
-
-            statusLabel.setText("NG");
-            statusLabel.setStyle("-fx-background-color: red;");
-            scanButton.setDisable(true);
-            btnAgain.setDisable(true);
-            btnContinue.setDisable(false);
-            btnReScan.setDisable(false);
-            makerPNField.requestFocus();
-            makerPNField.selectAll();
-            return;
-        }
-
-        // Scan mã đầu tiên
-        historyService.createHistoryForScannedMakePN(makerPN, employeeId, scanCode);
-        List<History> updated = historyService.getAllHistory();
-
-        lastScannedHistory = updated.get(updated.size() - 1);
-
-        updateRecentScans(lastScannedHistory);
-        currentMakerPN = makerPN;
-        currentEmployeeId = employeeId;
-        isScanning = true;
-
-        statusLabel.setText("Good");
-        statusLabel.setStyle("-fx-background-color: #32CD32;"); // xanh chuối
-        disableAllButtons();
-        scanButton.setDisable(false);
-
-        scanCodeField.requestFocus();
-        scanCodeField.selectAll();
+        handleFirstScan();
     }
+
 
     private void handleContinue() {
         if (pendingHistory == null) return;
@@ -202,8 +147,8 @@ public class ScannerController {
         disableAllButtons();
         scanButton.setDisable(false);
 
-        makerPNField.requestFocus();
-        makerPNField.selectAll();
+        scanCodeField.requestFocus();
+        scanCodeField.selectAll();
     }
 
     private void handleReScan() {
@@ -310,5 +255,62 @@ public class ScannerController {
     }
 
 
+
+    private boolean validateInputs() {
+        if (employeeIdField.getText().trim().isEmpty() || makerPNField.getText().trim().isEmpty()) {
+            showStatus("Missing input", "orange");
+            return false;
+        }
+        return true;
+    }
+
+    private void handleNotFound() {
+        showStatus("NOT FOUND", "gray");
+        disableAllButtons();
+        scanButton.setDisable(false);
+        makerPNField.requestFocus();
+        makerPNField.selectAll();
+    }
+
+    private void handleDuplicate() {
+        showStatus("Duplicate", "yellow");
+        createAndStorePendingHistory();
+        disableAllButtons();
+        btnAgain.setDisable(false);
+        btnReScan.setDisable(false);
+        scanCodeField.requestFocus();
+        scanCodeField.selectAll();
+    }
+
+    private void handleWrongScan() {
+        showStatus("NG", "red");
+        createAndStorePendingHistory();
+        disableAllButtons();
+        btnReScan.setDisable(false);
+        btnContinue.setDisable(false);
+        makerPNField.requestFocus();
+        makerPNField.selectAll();
+    }
+
+    private void handleFirstScan() {
+        historyService.createHistoryForScannedMakePN(currentMakerPN, currentEmployeeId, currentScanCode);
+        List<History> updated = historyService.getAllHistory();
+        lastScannedHistory = updated.get(updated.size() - 1);
+        updateRecentScans(lastScannedHistory);
+
+        isScanning = true;
+        showStatus("Good", "#32CD32");
+        disableAllButtons();
+        scanButton.setDisable(false);
+        scanCodeField.requestFocus();
+        scanCodeField.selectAll();
+    }
+
+    private void createAndStorePendingHistory() {
+        historyService.createHistoryForScannedMakePN(currentMakerPN, currentEmployeeId, currentScanCode);
+        List<History> updated = historyService.getAllHistory();
+        pendingHistory = updated.get(updated.size() - 1);
+        updateRecentScans(pendingHistory);
+    }
 
 }
