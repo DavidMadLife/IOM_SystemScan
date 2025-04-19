@@ -125,8 +125,8 @@ public class  HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public boolean isScanning(String scanCode) {
-        return historyRepository.existsByScanCode(scanCode);
+    public boolean isScanning(String scanCode, String makerPN) {
+        return historyRepository.existsByScanCodeAndMakerPN(scanCode, makerPN);
     }
 
 

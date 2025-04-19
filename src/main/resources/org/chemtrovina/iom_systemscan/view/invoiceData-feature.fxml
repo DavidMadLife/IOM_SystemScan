@@ -8,14 +8,7 @@
 
 <AnchorPane prefHeight="832.0" prefWidth="1280.0" style="-fx-background-color: #456F92;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.chemtrovina.iom_systemscan.controller.InvoiceDataController">
    <children>
-      <!--<ToolBar layoutX="6.0" AnchorPane.bottomAnchor="791.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="3.0">
-         <items>
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Scanner Checking" />
-            <Button layoutX="10.0" layoutY="11.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Statistical" />
-            <Button layoutX="128.0" layoutY="11.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Invoice Data" />
-         </items>
-      </ToolBar>-->
-       <fx:include source="navbar.fxml" />
+       <!--<fx:include source="navbar.fxml" />-->
        <TableView fx:id="invoiceTableView" layoutX="14.0" layoutY="80.0" prefHeight="732.0" prefWidth="1252.0" AnchorPane.topAnchor="70.0">
            <columns>
                <TableColumn fx:id="invoiceNoColumn" prefWidth="289.0" text="Invoice No" />

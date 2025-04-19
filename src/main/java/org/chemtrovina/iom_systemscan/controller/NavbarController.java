@@ -6,7 +6,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.chemtrovina.iom_systemscan.model.FxmlPage;
 
 public class NavbarController {
 
@@ -23,29 +25,34 @@ public class NavbarController {
     }
 
     private void handleScannerButton(ActionEvent event) {
-        navigateTo("/org/chemtrovina/iom_systemscan/view/scanner-feature.fxml", event);
+        navigateTo("/org/chemtrovina/iom_systemscan/view/scanner-feature.fxml");
     }
 
     private void handleStatisticalButton(ActionEvent event) {
-        navigateTo("/org/chemtrovina/iom_systemscan/view/statistical-feature.fxml", event);
+        navigateTo("/org/chemtrovina/iom_systemscan/view/statistical-feature.fxml");
     }
 
     private void handleInvoiceButton(ActionEvent event) {
-        navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml", event);
+        navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml");
     }
 
-    private void navigateTo(String fxmlPath, ActionEvent event) {
+    private void navigateTo(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
+            FxmlPage page = FXMLCacheManager.getPage(fxmlPath);
+            Parent view = page.getView();
 
-            // Lấy Stage hiện tại (không tạo mới)
-            Stage currentStage = (Stage) btnScanner.getScene().getWindow(); // Hoặc dùng event.getSource()
-            currentStage.setScene(new Scene(root));
-            currentStage.show();
+            // Gán view mới vào mainContentPane trong MainController
+            AnchorPane contentPane = MainController.getMainContentPane();
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(view);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setRightAnchor(view, 0.0);
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("Lỗi khi chuyển trang: " + fxmlPath);
+            System.err.println("Lỗi khi load view: " + fxmlPath);
         }
     }
+
 }
