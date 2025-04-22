@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,35 +56,41 @@ public class  HistoryServiceImpl implements HistoryService {
                         (status == null || history.getStatus().equals(status)))
                 .toList();
     }
+
     @Override
-    public void createHistoryForScannedMakePN(String makerPN, String employeeId, String scanCode) {
-        // Tìm MOQ trong bảng MOQ theo sapPN
-        MOQ moq = moqRepository.findByMakerPN(makerPN);
+    public void createHistoryForScannedMakePN(String makerPNInput, String employeeId, String scanCode) {
+        // Tách đúng mã MakerPN từ chuỗi bị "dính"
+        String realMakerPN = extractRealMakerPN(makerPNInput);
 
-        if (moq != null) {
-            // Lấy ngày và giờ hiện tại
-            LocalDate currentDate = LocalDate.now();
-            LocalTime currentTime = LocalTime.now();
+        if (realMakerPN != null) {
+            MOQ moq = moqRepository.findByMakerPN(realMakerPN);
 
-            // Tạo mới đối tượng History
-            History history = new History();
-            history.setMaker(moq.getMaker());
-            history.setMakerPN(makerPN);
-            history.setSapPN(moq.getSapPN());
-            history.setQuantity(moq.getMoq());  // Lấy quantity từ moq
-            history.setDate(currentDate);
-            history.setTime(currentTime);
-            history.setEmployeeId(employeeId);
-            history.setScanCode(scanCode);
-            history.setStatus("Scanned");
+            if (moq != null) {
+                LocalDate currentDate = LocalDate.now();
+                LocalTime currentTime = LocalTime.now();
 
-            // Lưu vào bảng History
-            addHistory(history);
+                History history = new History();
+                history.setMaker(moq.getMaker());
+                history.setMakerPN(realMakerPN);
+                history.setSapPN(moq.getSapPN());
+                history.setQuantity(moq.getMoq());
+                history.setDate(currentDate);
+                history.setTime(currentTime);
+                history.setEmployeeId(employeeId);
+                history.setScanCode(scanCode);
+                history.setStatus("Scanned");
+
+                addHistory(history);
+            } else {
+                System.out.println("Không tìm thấy MOQ cho MakerPN: " + realMakerPN);
+            }
         } else {
-            // Xử lý khi không tìm thấy MOQ với sapPN được scan
-            System.out.println("Không tìm thấy MOQ cho Maker Part Number: " + makerPN);
+            System.out.println("Không thể nhận diện MakerPN từ chuỗi: " + makerPNInput);
         }
+
+
     }
+
 
     @Override
     public void deleteById(int id) {
@@ -128,6 +135,29 @@ public class  HistoryServiceImpl implements HistoryService {
     public boolean isScanning(String scanCode, String makerPN) {
         return historyRepository.existsByScanCodeAndMakerPN(scanCode, makerPN);
     }
+
+    @Override
+    public String extractRealMakerPN(String makerPNInput) {
+        List<String> allMakerPNs = moqRepository.findAllMakerPNs();
+
+        // Làm sạch input (loại bỏ ký tự không phải chữ số và chữ cái)
+        String cleanedInput = makerPNInput.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+
+        System.out.println("Cleaned input: " + cleanedInput);
+        System.out.println("Danh sách MakerPN trong DB: ");
+        allMakerPNs.forEach(System.out::println);
+
+
+        return allMakerPNs.stream()
+                .map(String::toUpperCase) // normalize tất cả MakerPN trong DB
+                .filter(cleanedInput::contains) // kiểm tra xem chuỗi input có chứa MakerPN không
+                .max((a, b) -> Integer.compare(a.length(), b.length())) // lấy chuỗi dài nhất (khả năng đúng cao hơn)
+                .orElse(null);
+
+
+    }
+
+
 
 
 }

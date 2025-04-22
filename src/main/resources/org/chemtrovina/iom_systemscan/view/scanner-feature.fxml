@@ -16,7 +16,7 @@
       <!--<fx:include source="navbar.fxml" />-->
       <Pane layoutX="15.0" layoutY="49.0" style="-fx-background-color: #FFFFFF;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="613.0" AnchorPane.topAnchor="49.0">
          <children>
-            <HBox alignment="CENTER" layoutX="47.0" layoutY="637.0" prefHeight="100.0" prefWidth="572.0" style="-fx-spacing: 30;">
+            <HBox alignment="CENTER" layoutX="46.0" layoutY="637.0" prefHeight="58.0" prefWidth="573.0" style="-fx-spacing: 30;">
                <children>
                   <Button fx:id="btnAgain" mnemonicParsing="false" prefHeight="80.0" prefWidth="167.0" style="-fx-font-weight: Bold; -fx-background-color: #DD2426;" text="Again" textFill="WHITE">
                      <font>

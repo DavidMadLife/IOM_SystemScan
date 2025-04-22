@@ -34,6 +34,7 @@ public class NavbarController {
 
     private void handleInvoiceButton(ActionEvent event) {
         navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml");
+
     }
 
     private void navigateTo(String fxmlPath) {

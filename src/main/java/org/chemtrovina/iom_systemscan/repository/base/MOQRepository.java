@@ -7,5 +7,6 @@ import java.util.List;
 public interface MOQRepository extends GenericRepository<MOQ>{
 
     MOQ findByMakerPN(String makerPN);
+    List<String> findAllMakerPNs();
 
 }

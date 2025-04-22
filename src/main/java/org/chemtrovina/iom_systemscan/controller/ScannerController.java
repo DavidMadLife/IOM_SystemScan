@@ -106,13 +106,16 @@ public class ScannerController {
         if (!validateInputs()) return;
 
         currentEmployeeId = employeeIdField.getText().trim();
-        currentMakerPN = makerPNField.getText().trim();
+        String rawMakerPN = makerPNField.getText().trim();
         currentScanCode = scanCodeField.getText().trim();
 
-        if (!historyService.isValidMakerPN(currentMakerPN)) {
+        String realMakerPN = historyService.extractRealMakerPN(rawMakerPN);
+        if (realMakerPN == null) {
             handleNotFound();
             return;
         }
+
+        currentMakerPN = realMakerPN; // cập nhật lại biến dùng xuyên suốt
 
         if (historyService.isScanning(currentScanCode, currentMakerPN)) {
             handleDuplicate();

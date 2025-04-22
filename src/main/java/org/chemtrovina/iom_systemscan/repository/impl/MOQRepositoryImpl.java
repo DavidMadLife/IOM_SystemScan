@@ -45,6 +45,13 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
     }
 
     @Override
+    public List<String> findAllMakerPNs() {
+        String sql = "SELECT MakerPN FROM MOQ";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+
+    @Override
     public MOQ findByMakerPN(String makerPN) {
         String sql = "SELECT * FROM MOQ WHERE MakerPN = ?";
         List<MOQ> result = jdbcTemplate.query(sql, new MOQRowMapper(), makerPN);
@@ -64,4 +71,6 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
             );
         }
     }
+
+
 }
