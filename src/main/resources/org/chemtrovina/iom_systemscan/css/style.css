@@ -1,0 +1,11 @@
+.button.no-shrink {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+.button.no-shrink:pressed {
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}

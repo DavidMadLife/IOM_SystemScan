@@ -50,6 +50,34 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
         return jdbcTemplate.queryForList(sql, String.class);
     }
 
+    @Override
+    public List<MOQ> searchMOQ(String maker, String makerPN, String sapPN, String MOQ, String MSL) {
+        StringBuilder sql = new StringBuilder("Select * FROM MOQ Where 1=1 ");
+        List<Object> params = new java.util.ArrayList<>();
+        if (maker != null && !maker.isBlank()) {
+            sql.append("AND Maker = ? ");
+            params.add(maker);
+        }
+        if (makerPN != null && !makerPN.isBlank()) {
+            sql.append("AND MakerPN = ? ");
+            params.add(makerPN);
+        }
+        if (sapPN != null && !sapPN.isBlank()) {
+            sql.append("AND SapPN = ? ");
+            params.add(sapPN);
+        }
+        if (MOQ != null && !MOQ.isBlank()) {
+            sql.append("AND MOQ = ? ");
+            params.add(Integer.parseInt(MOQ));
+        }
+        if (MSL != null && !MSL.isBlank()) {
+            sql.append("AND MSL = ? ");
+            params.add(Integer.parseInt(MSL));
+        }
+
+        return jdbcTemplate.query(sql.toString(), params.toArray(), new  MOQRowMapper());
+    }
+
 
     @Override
     public MOQ findByMakerPN(String makerPN) {

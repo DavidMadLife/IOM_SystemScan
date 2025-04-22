@@ -22,5 +22,7 @@
 
         <Button fx:id="btnInvoice" text="Invoice Data" mnemonicParsing="false"
                 prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
+        <Button fx:id="btnMOQ" text="Import MOQ Data" mnemonicParsing="false"
+                prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
     </items>
 </ToolBar>

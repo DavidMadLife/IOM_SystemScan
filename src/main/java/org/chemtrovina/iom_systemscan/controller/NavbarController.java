@@ -15,6 +15,7 @@ public class NavbarController {
     @FXML private Button btnScanner;
     @FXML private Button btnStatistical;
     @FXML private Button btnInvoice;
+    @FXML private Button btnMOQ;
 
     @FXML
     public void initialize() {
@@ -22,6 +23,7 @@ public class NavbarController {
         btnScanner.setOnAction(this::handleScannerButton);
         btnStatistical.setOnAction(this::handleStatisticalButton);
         btnInvoice.setOnAction(this::handleInvoiceButton);
+        btnMOQ.setOnAction(this::handleImportMOQButton);
     }
 
     private void handleScannerButton(ActionEvent event) {
@@ -34,6 +36,11 @@ public class NavbarController {
 
     private void handleInvoiceButton(ActionEvent event) {
         navigateTo("/org/chemtrovina/iom_systemscan/view/invoiceData-feature.fxml");
+
+    }
+
+    private void handleImportMOQButton(ActionEvent event) {
+        navigateTo("/org/chemtrovina/iom_systemscan/view/importDataMOQ-feature.fxml");
 
     }
 
