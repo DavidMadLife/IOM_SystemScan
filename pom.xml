@@ -88,6 +88,13 @@
             <version>6.1.14</version> <!-- Hoặc bản mới nhất phù hợp -->
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.4.0</version>
+        </dependency>
+
+
 
     </dependencies>
 

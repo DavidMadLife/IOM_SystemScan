@@ -4,25 +4,14 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<ToolBar xmlns="http://javafx.com/javafx/23.0.1"
-         xmlns:fx="http://javafx.com/fxml/1"
-         fx:controller="org.chemtrovina.iom_systemscan.controller.NavbarController"
-         prefHeight="41.0"
-         prefWidth="1252.0"
-         AnchorPane.topAnchor="3.0"
-         AnchorPane.leftAnchor="14.0"
-         AnchorPane.rightAnchor="14.0">
+<ToolBar prefHeight="31.0" prefWidth="1252.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="3.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.chemtrovina.iom_systemscan.controller.NavbarController">
 
     <items>
-        <Button fx:id="btnScanner" text="Scanner Checking" mnemonicParsing="false"
-                prefHeight="29.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
+        <Button fx:id="btnScanner" mnemonicParsing="false" prefHeight="29.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Scanner Checking" />
 
-        <Button fx:id="btnStatistical" text="Statistical" mnemonicParsing="false"
-                prefHeight="27.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
+        <Button fx:id="btnStatistical" mnemonicParsing="false" prefHeight="27.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Statistical" />
 
-        <Button fx:id="btnInvoice" text="Invoice Data" mnemonicParsing="false"
-                prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
-        <Button fx:id="btnMOQ" text="Import MOQ Data" mnemonicParsing="false"
-                prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" />
+        <Button fx:id="btnInvoice" mnemonicParsing="false" prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Invoice Data" />
+        <Button fx:id="btnMOQ" mnemonicParsing="false" prefHeight="31.0" prefWidth="126.0" style="-fx-font-weight: Bold;" text="Import MOQ Data" />
     </items>
 </ToolBar>

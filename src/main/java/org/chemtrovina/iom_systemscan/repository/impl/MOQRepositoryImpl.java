@@ -1,12 +1,19 @@
 package org.chemtrovina.iom_systemscan.repository.impl;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.chemtrovina.iom_systemscan.model.MOQ;
 import org.chemtrovina.iom_systemscan.repository.base.MOQRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQRepository {
@@ -71,7 +78,7 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
             params.add(Integer.parseInt(MOQ));
         }
         if (MSL != null && !MSL.isBlank()) {
-            sql.append("AND MSL = ? ");
+            sql.append("AND MSQL = ? ");
             params.add(Integer.parseInt(MSL));
         }
 
@@ -85,6 +92,35 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
         List<MOQ> result = jdbcTemplate.query(sql, new MOQRowMapper(), makerPN);
         return result.isEmpty() ? null : result.get(0);
     }
+
+    @Override
+    public List<MOQ> importMoqFromExcel(File file){
+        List<MOQ> moqList = new ArrayList<>();
+        try (FileInputStream fis = new FileInputStream(file);
+             XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+
+            XSSFSheet sheet = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Bỏ dòng tiêu đề
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+
+                MOQ moq = new MOQ();
+                moq.setSapPN(row.getCell(0).getStringCellValue());
+                moq.setMaker(row.getCell(1).getStringCellValue());
+                moq.setMakerPN(row.getCell(2).getStringCellValue());
+                moq.setMoq((int) row.getCell(3).getNumericCellValue());
+                moq.setMsql((int) row.getCell(4).getNumericCellValue());
+
+                moqList.add(moq);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return moqList;
+    }
+
 
     static class MOQRowMapper implements RowMapper<MOQ> {
         @Override

@@ -4,6 +4,7 @@ import org.chemtrovina.iom_systemscan.model.MOQ;
 import org.chemtrovina.iom_systemscan.repository.base.MOQRepository;
 import org.chemtrovina.iom_systemscan.service.MOQService;
 
+import java.io.File;
 import java.util.List;
 
 public class MOQServiceImpl implements MOQService {
@@ -17,4 +18,20 @@ public class MOQServiceImpl implements MOQService {
     public List<MOQ> searchMOQ(String maker, String makerPN, String sapPN, String MOQ, String MSL) {
         return moqRepository.searchMOQ(maker, makerPN, sapPN, MOQ, MSL);
     }
+
+    @Override
+    public void saveImportedData(File file) {
+        List<MOQ> moqs = moqRepository.importMoqFromExcel(file);
+        for (MOQ moq : moqs) {
+            MOQ existing = moqRepository.findByMakerPN(moq.getMakerPN());
+            if (existing == null) {
+                moqRepository.add(moq);
+            } else {
+                moq.setId(existing.getId());
+                moqRepository.update(moq);
+            }
+        }
+    }
+
+
 }

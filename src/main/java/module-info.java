@@ -10,7 +10,7 @@ module org.chemtrovina.iom_systemscan {
     requires java.sql;
     requires spring.context;
     requires spring.beans;
-    requires java.desktop;
+    requires org.apache.poi.ooxml;
 
     opens org.chemtrovina.iom_systemscan to javafx.fxml;
     exports org.chemtrovina.iom_systemscan;

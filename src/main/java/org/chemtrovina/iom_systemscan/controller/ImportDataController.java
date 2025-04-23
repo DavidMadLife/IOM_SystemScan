@@ -56,12 +56,23 @@ public class ImportDataController {
 
     @FXML
     public void initialize() {
-        //noColumn.setCellValueFactory(new PropertyValueFactory<>("no"));
+        // Số thứ tự (không có trong DB)
+        noColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getIndex() >= moqTableView.getItems().size()) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(getTableRow().getIndex() + 1));
+                }
+            }
+        });
         makerColumn.setCellValueFactory(new PropertyValueFactory<>("maker"));
         makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPN"));
         sapPNColumn.setCellValueFactory(new PropertyValueFactory<>("sapPN"));
         moqColumn.setCellValueFactory(new PropertyValueFactory<>("moq"));
-        mslColumn.setCellValueFactory(new PropertyValueFactory<>("msl"));
+        mslColumn.setCellValueFactory(new PropertyValueFactory<>("msql"));
 
         DataSource dataSource = DataSourceConfig.getDataSource();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -76,7 +87,7 @@ public class ImportDataController {
 
     private void chooseFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn file Excel");
+        fileChooser.setTitle("Select file Excel");
 
         // Chỉ cho phép chọn file Excel (.xlsx)
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel Files (*.xlsx)", "*.xlsx");
@@ -90,10 +101,35 @@ public class ImportDataController {
             selectedFile = file;
             fileNameLabel.setText(file.getName());
         } else {
-            fileNameLabel.setText("Chưa chọn file");
+            fileNameLabel.setText("File not selected");
         }
     }
-    private void importDataFromExcel() {}
+    private void importDataFromExcel() {
+        if (selectedFile == null) {
+            showAlert(Alert.AlertType.WARNING, "No File Selected", "Please select an Excel file first.");
+            return;
+        }
+
+        moqService.saveImportedData(selectedFile);
+
+        // Lấy lại toàn bộ dữ liệu sau khi import (nếu muốn hiển thị)
+        List<MOQ> importedData = moqService.searchMOQ(null, null, null, null, null);
+
+        if (importedData.isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, "Import Result", "No data found or inserted.");
+        } else {
+            allData.clear();
+            allData.addAll(importedData);
+
+            moqObservableList.clear();
+            moqObservableList.addAll(importedData);
+
+            moqTableView.setItems(moqObservableList);
+
+            showAlert(Alert.AlertType.INFORMATION, "Import Successful", "Successfully imported " + importedData.size() + " items.");
+        }
+    }
+
     private void onSearch() {
         String maker = makerCheckBox.isSelected() ? makerField.getText() : null;
         String pn = pnCheckBox.isSelected() ? pnField.getText() : null;
@@ -106,4 +142,13 @@ public class ImportDataController {
         moqTableView.setItems(observableList);
 
     }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }
