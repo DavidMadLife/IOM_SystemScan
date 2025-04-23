@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implements HistoryRepository {
@@ -35,24 +36,60 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
         );
     }
 
+
     @Override
     public void update(History history) {
-        String sql = "UPDATE History SET InvoiceId = ?, Date = ?, Time = ?, Maker = ?, MakerPN = ?, SapPN = ?, " +
-                "Quantity = ?, EmployeeId = ?, Status = ?,  ScanCode = ? WHERE Id = ?";
-        jdbcTemplate.update(sql,
-                history.getInvoiceId(),
-                history.getDate(),
-                history.getTime(),
-                history.getMaker(),
-                history.getMakerPN(),
-                history.getSapPN(),
-                history.getQuantity(),
-                history.getEmployeeId(),
-                history.getStatus(),
-                history.getScanCode(),
-                history.getId()
-        );
+        // Xây dựng câu lệnh SQL động để cập nhật chỉ những trường có thay đổi
+        StringBuilder sql = new StringBuilder("UPDATE History SET ");
+        List<Object> params = new ArrayList<>();
+        if (history.getDate() != null) {
+            sql.append("Date = ?, ");
+            params.add(history.getDate());
+        }
+        if (history.getTime() != null) {
+            sql.append("Time = ?, ");
+            params.add(history.getTime());
+        }
+        if (history.getMaker() != null && !history.getMaker().equals("")) {
+            sql.append("Maker = ?, ");
+            params.add(history.getMaker());
+        }
+        if (history.getMakerPN() != null && !history.getMakerPN().equals("")) {
+            sql.append("MakerPN = ?, ");
+            params.add(history.getMakerPN());
+        }
+        if (history.getSapPN() != null && !history.getSapPN().equals("")) {
+            sql.append("SapPN = ?, ");
+            params.add(history.getSapPN());
+        }
+        if (history.getQuantity() > 0) {
+            sql.append("Quantity = ?, ");
+            params.add(history.getQuantity());
+        }
+        if (history.getEmployeeId() != null) {
+            sql.append("EmployeeId = ?, ");
+            params.add(history.getEmployeeId());
+        }
+        if (history.getStatus() != null && !history.getStatus().equals("")) {
+            sql.append("Status = ?, ");
+            params.add(history.getStatus());
+        }
+        if (history.getScanCode() != null && !history.getScanCode().equals("")) {
+            sql.append("ScanCode = ?, ");
+            params.add(history.getScanCode());
+        }
+
+        // Loại bỏ dấu phẩy cuối câu SQL
+        sql.setLength(sql.length() - 2);
+
+        // Thêm phần WHERE vào câu SQL
+        sql.append(" WHERE Id = ?");
+        params.add(history.getId());
+
+        // Chạy câu SQL với các tham số
+        jdbcTemplate.update(sql.toString(), params.toArray());
     }
+
 
     @Override
     public List<History> findAll() {
