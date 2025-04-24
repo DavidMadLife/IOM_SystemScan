@@ -305,6 +305,7 @@ public class ScannerController {
         showStatus("Good", "#32CD32");
         disableAllButtons();
         scanButton.setDisable(false);
+        btnReScan.setDisable(false);
         scanCodeField.requestFocus();
         scanCodeField.selectAll();
     }

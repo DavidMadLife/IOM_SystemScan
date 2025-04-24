@@ -87,7 +87,6 @@ public class StatisticalFeatureController {
 
         deleteBtn.setOnAction(e -> onDeleteSelectedRow());
         updateBtn.setOnAction(e -> onUpdateSelectedRow());
-
     }
 
     private void onSearch() {
