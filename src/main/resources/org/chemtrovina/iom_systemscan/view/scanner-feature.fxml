@@ -44,17 +44,18 @@
       </Pane>
       <Pane layoutX="690.0" layoutY="25.0" prefHeight="763.0" prefWidth="565.0" AnchorPane.bottomAnchor="44.0" AnchorPane.leftAnchor="690.0">
          <children>
-            <TableView fx:id="historyTableView" layoutX="33.0" layoutY="215.0">
+            <TableView fx:id="historyTableView" layoutX="6.0" layoutY="215.0" prefHeight="422.0" prefWidth="552.0">
               <columns>
-                <TableColumn fx:id="dateColumn" prefWidth="109.0" text="Date" />
-                <TableColumn fx:id="sapColumn" prefWidth="174.0" text="SAP" />
-                  <TableColumn fx:id="reelColumn" prefWidth="58.0" text="Reel" />
-                  <TableColumn fx:id="quantityColumn" prefWidth="158.0" text="Quantity" />
+                <TableColumn fx:id="dateColumn" maxWidth="200.0" prefWidth="88.0" text="Date" />
+                  <TableColumn fx:id="makerPNColumn" maxWidth="200.0" prefWidth="150.0" text="Code" />
+                <TableColumn fx:id="sapColumn" maxWidth="200.0" prefWidth="150.0" text="SAP" />
+                  <TableColumn fx:id="reelColumn" maxWidth="200.0" prefWidth="50.0" text="Reel" />
+                  <TableColumn fx:id="quantityColumn" maxWidth="158.0" prefWidth="113.0" text="Quantity" />
               </columns>
             </TableView>
-            <Pane layoutX="33.0" layoutY="183.0" prefHeight="32.0" prefWidth="500.0" style="-fx-background-color: #2D3748;">
+            <Pane layoutX="6.0" layoutY="183.0" prefHeight="32.0" prefWidth="552.0" style="-fx-background-color: #2D3748;">
                <children>
-                  <Text fill="WHITE" layoutX="142.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="TableView History Scan" textAlignment="CENTER" wrappingWidth="216.13671875">
+                  <Text fill="WHITE" layoutX="157.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="TableView History Scan" textAlignment="CENTER" wrappingWidth="216.13671875">
                      <font>
                         <Font size="18.0" />
                      </font>

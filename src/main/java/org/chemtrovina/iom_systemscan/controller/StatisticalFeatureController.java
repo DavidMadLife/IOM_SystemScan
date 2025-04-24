@@ -125,10 +125,10 @@ public class StatisticalFeatureController {
 
     private void showUpdateDialog(History selected) {
         Dialog<History> dialog = new Dialog<>();
-        dialog.setTitle("Cập nhật thông tin");
-        dialog.setHeaderText("Chỉnh sửa thông tin bản ghi");
+        dialog.setTitle("Update History Information");
+        dialog.setHeaderText("Update History");
 
-        ButtonType updateButtonType = new ButtonType("Cập nhật", ButtonBar.ButtonData.OK_DONE);
+        ButtonType updateButtonType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
 
         TextField makerField = new TextField(selected.getMaker());
