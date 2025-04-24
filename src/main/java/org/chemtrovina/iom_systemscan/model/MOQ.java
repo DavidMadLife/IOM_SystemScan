@@ -6,12 +6,12 @@ public class MOQ {
     private String makerPN;
     private String sapPN;
     private Integer moq;
-    private Integer msql;
+    private String msql;
 
     public MOQ() {
     }
 
-    public MOQ(int id, String maker, String makerPN, String sapPN, Integer moq, Integer msql) {
+    public MOQ(int id, String maker, String makerPN, String sapPN, Integer moq, String msql) {
         this.id = id;
         this.maker = maker;
         this.makerPN = makerPN;
@@ -61,11 +61,11 @@ public class MOQ {
         this.moq = moq;
     }
 
-    public Integer getMsql() {
+    public String getMsql() {
         return msql;
     }
 
-    public void setMsql(Integer msql) {
+    public void setMsql(String msql) {
         this.msql = msql;
     }
 

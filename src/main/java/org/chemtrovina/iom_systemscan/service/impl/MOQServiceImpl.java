@@ -1,7 +1,9 @@
 package org.chemtrovina.iom_systemscan.service.impl;
 
 import org.chemtrovina.iom_systemscan.model.MOQ;
+import org.chemtrovina.iom_systemscan.repository.base.GenericRepository;
 import org.chemtrovina.iom_systemscan.repository.base.MOQRepository;
+import org.chemtrovina.iom_systemscan.repository.impl.GenericRepositoryImpl;
 import org.chemtrovina.iom_systemscan.service.MOQService;
 
 import java.io.File;
@@ -31,6 +33,16 @@ public class MOQServiceImpl implements MOQService {
                 moqRepository.update(moq);
             }
         }
+    }
+
+    @Override
+    public void deleteById(int id) {
+        moqRepository.delete(id);
+    }
+
+    @Override
+    public void updateImportedData(MOQ moq) {
+        moqRepository.update(moq);
     }
 
 

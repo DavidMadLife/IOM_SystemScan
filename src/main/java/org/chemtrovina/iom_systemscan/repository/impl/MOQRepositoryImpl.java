@@ -22,6 +22,8 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
         super(jdbcTemplate, new MOQRowMapper(), "MOQ");
     }
 
+
+
     @Override
     public void add(MOQ moq) {
         String sql = "INSERT INTO MOQ (Maker, MakerPN, SapPN, MOQ, MSQL) VALUES (?, ?, ?, ?, ?)";
@@ -110,7 +112,7 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
                 moq.setMaker(row.getCell(1).getStringCellValue());
                 moq.setMakerPN(row.getCell(2).getStringCellValue());
                 moq.setMoq((int) row.getCell(3).getNumericCellValue());
-                moq.setMsql((int) row.getCell(4).getNumericCellValue());
+                moq.setMsql(row.getCell(4).getStringCellValue());
 
                 moqList.add(moq);
             }
@@ -131,7 +133,7 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
                     rs.getString("MakerPN"),
                     rs.getString("SapPN"),
                     rs.getInt("MOQ"),
-                    rs.getInt("MSQL")
+                    rs.getString("MSQL")
             );
         }
     }

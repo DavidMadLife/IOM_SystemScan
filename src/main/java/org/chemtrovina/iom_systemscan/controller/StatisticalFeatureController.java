@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import org.chemtrovina.iom_systemscan.config.DataSourceConfig;
 import org.chemtrovina.iom_systemscan.model.History;
+import org.chemtrovina.iom_systemscan.model.MOQ;
 import org.chemtrovina.iom_systemscan.repository.base.HistoryRepository;
 import org.chemtrovina.iom_systemscan.repository.base.MOQRepository;
 import org.chemtrovina.iom_systemscan.repository.impl.HistoryRepositoryImpl;
@@ -59,15 +60,29 @@ public class StatisticalFeatureController {
     @FXML
     public void initialize() {
 
-        historyDateTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                updateBtn.setDisable(false);
-                deleteBtn.setDisable(false);
-            } else {
-                updateBtn.setDisable(true);
-                deleteBtn.setDisable(true);
-            }
+        historyDateTableView.setRowFactory(tv -> {
+            TableRow<History> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem updateItem = new MenuItem("Update");
+            updateItem.setOnAction(event -> showUpdateDialog(row.getItem()));
+
+            MenuItem deleteItem = new MenuItem("Delete");
+            deleteItem.setOnAction(event -> showDeleteConfirm(row.getItem()));
+
+            contextMenu.getItems().addAll(updateItem, deleteItem);
+
+            // Chỉ hiển thị menu nếu row không rỗng
+            row.contextMenuProperty().bind(
+                    javafx.beans.binding.Bindings.when(row.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(contextMenu)
+            );
+
+            return row;
         });
+
+
 
         // Gán các cột với property trong HistoryEntrance
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date")); // cần có field date dạng String
@@ -85,8 +100,8 @@ public class StatisticalFeatureController {
 
         searchBtn.setOnAction(e -> onSearch());
 
-        deleteBtn.setOnAction(e -> onDeleteSelectedRow());
-        updateBtn.setOnAction(e -> onUpdateSelectedRow());
+        /*deleteBtn.setOnAction(e -> onDeleteSelectedRow());
+        updateBtn.setOnAction(e -> onUpdateSelectedRow());*/
     }
 
     private void onSearch() {
@@ -108,96 +123,77 @@ public class StatisticalFeatureController {
         quantityText.setText(String.valueOf(totalQuantity));
     }
 
-    private void onDeleteSelectedRow() {
-        History selected = historyDateTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Accept Delete");
-            alert.setHeaderText("Are you sure you want to delete this record?");
-            alert.setContentText("ScanCode: " + selected.getScanCode());
+    private void showUpdateDialog(History selected) {
+        Dialog<History> dialog = new Dialog<>();
+        dialog.setTitle("Cập nhật thông tin");
+        dialog.setHeaderText("Chỉnh sửa thông tin bản ghi");
 
-            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(okButton, cancelButton);
+        ButtonType updateButtonType = new ButtonType("Cập nhật", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
 
-            alert.showAndWait().ifPresent(type -> {
-                if (type == okButton) {
-                    historyService.deleteById(selected.getId());
-                    historyDateTableView.getItems().remove(selected);
+        TextField makerField = new TextField(selected.getMaker());
+        TextField makerPNField = new TextField(selected.getMakerPN());
+        TextField sapPNField = new TextField(selected.getSapPN());
+        TextField quantityField = new TextField(String.valueOf(selected.getQuantity()));
 
-                    // Cập nhật số lượng reel và tổng quantity sau khi xóa
-                    reelText.setText(String.valueOf(historyDateTableView.getItems().size()));
-                    quantityText.setText(String.valueOf(
-                            historyDateTableView.getItems().stream().mapToInt(History::getQuantity).sum()
-                    ));
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Maker:"), 0, 0);
+        grid.add(makerField, 1, 0);
+        grid.add(new Label("Maker P/N:"), 0, 1);
+        grid.add(makerPNField, 1, 1);
+        grid.add(new Label("SAP P/N:"), 0, 2);
+        grid.add(sapPNField, 1, 2);
+        grid.add(new Label("Quantity:"), 0, 3);
+        grid.add(quantityField, 1, 3);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == updateButtonType) {
+                try {
+                    int updatedQuantity = Integer.parseInt(quantityField.getText().trim());
+                    selected.setMaker(makerField.getText().trim());
+                    selected.setMakerPN(makerPNField.getText().trim());
+                    selected.setSapPN(sapPNField.getText().trim());
+                    selected.setQuantity(updatedQuantity);
+                    return selected;
+                } catch (NumberFormatException e) {
+                    showAlert(Alert.AlertType.ERROR, "Lỗi định dạng", "Quantity phải là số nguyên.");
                 }
-            });
-        }
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(updated -> {
+            historyService.updateHistory(updated);
+            onSearch(); // Refresh table
+            showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật bản ghi thành công.");
+        });
     }
 
-    private void onUpdateSelectedRow() {
-        History selected = historyDateTableView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            Dialog<History> dialog = new Dialog<>();
-            dialog.setTitle("Cập nhật thông tin");
-            dialog.setHeaderText("Chỉnh sửa thông tin bản ghi");
+    private void showDeleteConfirm(History selected) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Xác nhận xóa");
+        confirm.setHeaderText("Bạn có chắc muốn xóa bản ghi này?");
+        confirm.setContentText("ScanCode: " + selected.getScanCode());
 
-            ButtonType updateButtonType = new ButtonType("Cập nhật", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
-
-            // Tạo các trường nhập
-            TextField makerField = new TextField(selected.getMaker());
-            TextField makerPNField = new TextField(selected.getMakerPN());
-            TextField sapPNField = new TextField(selected.getSapPN());
-            TextField quantityField = new TextField(String.valueOf(selected.getQuantity()));
-
-            // Giao diện form
-            GridPane grid = new GridPane();
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.add(new Label("Maker:"), 0, 0);
-            grid.add(makerField, 1, 0);
-            grid.add(new Label("Maker P/N:"), 0, 1);
-            grid.add(makerPNField, 1, 1);
-            grid.add(new Label("SAP P/N:"), 0, 2);
-            grid.add(sapPNField, 1, 2);
-            grid.add(new Label("Quantity:"), 0, 3);
-            grid.add(quantityField, 1, 3);
-
-            dialog.getDialogPane().setContent(grid);
-
-            // Xử lý khi nhấn nút Cập nhật
-            dialog.setResultConverter(dialogButton -> {
-                if (dialogButton == updateButtonType) {
-                    try {
-                        int updatedQuantity = Integer.parseInt(quantityField.getText().trim());
-
-                        // Cập nhật thông tin
-                        selected.setMaker(makerField.getText().trim());
-                        selected.setMakerPN(makerPNField.getText().trim());
-                        selected.setSapPN(sapPNField.getText().trim());
-                        selected.setQuantity(updatedQuantity);
-
-                        return selected;
-                    } catch (NumberFormatException e) {
-                        showAlert(Alert.AlertType.ERROR, "Lỗi định dạng", "Quantity phải là số nguyên.");
-                    }
-                }
-                return null;
-            });
-
-            dialog.showAndWait().ifPresent(updated -> {
-
-                System.out.println("Update ID: " + updated.getId());
-
-                historyService.updateHistory(updated); // Gọi DB update
-                historyDateTableView.refresh(); // Cập nhật TableView
-                quantityText.setText(String.valueOf(
-                        historyDateTableView.getItems().stream().mapToInt(History::getQuantity).sum()
-                ));
-            });
-        }
+        confirm.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.OK) {
+                historyService.deleteById(selected.getId());
+                onSearch(); // Refresh lại view
+                showAlert(Alert.AlertType.INFORMATION, "Đã xóa", "Xóa bản ghi thành công.");
+            }
+        });
     }
+
+
+
+
+
+
+
 
 
     //Alert

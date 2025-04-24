@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -83,6 +84,37 @@ public class ImportDataController {
         btnImportData.setOnAction(e -> importDataFromExcel());
         btnSearch.setOnAction(e -> onSearch());
 
+        moqTableView.setRowFactory(tv -> {
+            TableRow<MOQ> row = new TableRow<>();
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem updateItem = new MenuItem("Update");
+            updateItem.setOnAction(event -> {
+                MOQ selected = row.getItem();
+                if (selected != null) {
+                    showUpdateDialog(selected); // Gọi dialog để sửa
+                }
+            });
+
+            MenuItem deleteItem = new MenuItem("Delete");
+            deleteItem.setOnAction(event -> {
+                MOQ selected = row.getItem();
+                if (selected != null) {
+                    deleteMOQ(selected); // Gọi hàm xóa
+                }
+            });
+
+            contextMenu.getItems().addAll(updateItem, deleteItem);
+
+            row.contextMenuProperty().bind(
+                    javafx.beans.binding.Bindings.when(row.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(contextMenu)
+            );
+
+            return row;
+        });
+
     }
 
     private void chooseFile() {
@@ -150,5 +182,83 @@ public class ImportDataController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private void showUpdateDialog(MOQ moq) {
+        Dialog<MOQ> dialog = new Dialog<>();
+        dialog.setTitle("Update MOQ Entry");
+        dialog.setHeaderText("Update entry for: " + moq.getMakerPN());
+
+        ButtonType updateButtonType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
+
+        // Tạo form nhập
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField makerField = new TextField(moq.getMaker());
+        TextField makerPNField = new TextField(moq.getMakerPN());
+        TextField sapPNField = new TextField(moq.getSapPN());
+        TextField moqField = new TextField(String.valueOf(moq.getMoq()));
+        TextField mslField = new TextField(moq.getMsql());
+
+        grid.add(new Label("Maker:"), 0, 0);
+        grid.add(makerField, 1, 0);
+        grid.add(new Label("Maker P/N:"), 0, 1);
+        grid.add(makerPNField, 1, 1);
+        grid.add(new Label("SAP P/N:"), 0, 2);
+        grid.add(sapPNField, 1, 2);
+        grid.add(new Label("MOQ:"), 0, 3);
+        grid.add(moqField, 1, 3);
+        grid.add(new Label("MSL:"), 0, 4);
+        grid.add(mslField, 1, 4);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Khi nhấn "Update"
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == updateButtonType) {
+                try {
+                    int newMoq = Integer.parseInt(moqField.getText());
+
+                    moq.setMaker(makerField.getText());
+                    moq.setMakerPN(makerPNField.getText());
+                    moq.setSapPN(sapPNField.getText());
+                    moq.setMoq(newMoq);
+                    moq.setMsql(mslField.getText());
+
+                    return moq;
+                } catch (NumberFormatException e) {
+                    showAlert(Alert.AlertType.ERROR, "Invalid Input", "MOQ must be a number!");
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(updatedMoq -> {
+            moqService.updateImportedData(updatedMoq);
+            moqTableView.refresh();
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Entry updated successfully.");
+        });
+    }
+
+
+    private void deleteMOQ(MOQ moq) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete MOQ");
+        confirm.setHeaderText("Are you sure you want to delete this entry?");
+        confirm.setContentText("MakerPN: " + moq.getMakerPN());
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                moqService.deleteById(moq.getId()); // gọi Service xoá DB
+                moqObservableList.remove(moq); // xoá trong bảng UI
+                showAlert(Alert.AlertType.INFORMATION, "Deleted", "Entry deleted successfully.");
+                onSearch();
+            }
+        });
+    }
+
+
 
 }
