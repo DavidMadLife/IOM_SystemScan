@@ -9,4 +9,6 @@ import java.util.List;
 public interface MOQService {
     List<MOQ> searchMOQ(String maker, String makerPN, String sapPN, String MOQ, String MSL);
     void saveImportedData(File file) ;
+    void deleteById(int id);
+    void updateImportedData(MOQ moq);
 }
