@@ -106,6 +106,7 @@ public class  HistoryServiceImpl implements HistoryService {
                 .entrySet().stream()
                 .map(entry -> {
                     String sapPN = entry.getKey();
+                    String makerPN = entry.getKey();
                     List<History> group = entry.getValue();
 
                     LocalDate latestDate = group.stream()
@@ -116,7 +117,7 @@ public class  HistoryServiceImpl implements HistoryService {
                     int reelCount = group.size();
                     int totalQuantity = group.stream().mapToInt(History::getQuantity).sum();
 
-                    return new HistorySummaryViewModel(sapPN, latestDate, reelCount, totalQuantity);
+                    return new HistorySummaryViewModel(sapPN, makerPN, latestDate, reelCount, totalQuantity);
                 })
                 .toList();
     }

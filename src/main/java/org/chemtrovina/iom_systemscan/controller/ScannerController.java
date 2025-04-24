@@ -39,6 +39,7 @@ public class ScannerController {
     @FXML private Label statusLabel;
     @FXML private TableView<HistorySummaryViewModel> historyTableView;
     @FXML private TableColumn<HistorySummaryViewModel, String> dateColumn;
+    @FXML private TableColumn<HistorySummaryViewModel, String> makerPNColumn;
     @FXML private TableColumn<HistorySummaryViewModel, String> sapColumn;
     @FXML private TableColumn<HistorySummaryViewModel, Integer> reelColumn;
     @FXML private TableColumn<HistorySummaryViewModel, Integer> quantityColumn;
@@ -67,6 +68,7 @@ public class ScannerController {
 
         // Setup cột table
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPN"));
         sapColumn.setCellValueFactory(new PropertyValueFactory<>("sapPN"));
         reelColumn.setCellValueFactory(new PropertyValueFactory<>("reel"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
@@ -227,6 +229,7 @@ public class ScannerController {
 
     private void updateRecentScans(History lastScannedHistory) {
         String sapPN = lastScannedHistory.getSapPN();
+        String makerPN = lastScannedHistory.getMakerPN();
         int quantity = lastScannedHistory.getQuantity();
 
         // Kiểm tra nếu đang scan cùng mã đã có trong recentScansMap
@@ -246,6 +249,7 @@ public class ScannerController {
             // Tạo mới HistorySummaryViewModel cho mã vừa scan
             HistorySummaryViewModel newSummary = new HistorySummaryViewModel(
                     sapPN,
+                    makerPN,
                     lastScannedHistory.getDate(),
                     1,
                     quantity
