@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>C:\Users\Assy-PC\Developer\Dev\IOM_SystemScan\out\artifacts\IOM_SystemScan_jar2\IOM_SystemScan.jar</jar>
-  <outfile>C:\Users\Assy-PC\Developer\Dev\IOM_SystemScan\out\artifacts\IOM_SystemScan_jar2\IOM.exe</outfile>
+  <outfile>C:\Users\Assy-PC\Developer\Dev\IOM_SystemScan\out\artifacts\IOM_SystemScan_jar2\IOM_v2.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

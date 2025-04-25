@@ -15,13 +15,14 @@ public class History {
     private String employeeId;
     private String status;
     private String scanCode;
+    private String MSL;
 
     public History() {
     }
 
     public History(int id, Integer invoiceId, LocalDate date, LocalTime time,
                    String maker, String makerPN, String sapPN, int quantity,
-                   String employeeId, String status, String scanCode) {
+                   String employeeId, String status, String scanCode, String MSL) {
         this.id = id;
         this.invoiceId = invoiceId;
         this.date = date;
@@ -33,6 +34,7 @@ public class History {
         this.employeeId = employeeId;
         this.status = status;
         this.scanCode = scanCode;
+        this.MSL = MSL;
     }
 
     // Getter và Setter methods
@@ -122,6 +124,13 @@ public class History {
 
     public void setScanCode(String scanCode) {
         this.scanCode = scanCode;
+    }
+
+    public String getMSL() {
+        return MSL;
+    }
+    public void setMSL(String MSL) {
+        this.MSL = MSL;
     }
 
 
