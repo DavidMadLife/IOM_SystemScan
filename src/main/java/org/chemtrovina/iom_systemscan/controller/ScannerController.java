@@ -167,6 +167,11 @@ public class ScannerController {
             makerPNField.selectAll();
         }
 
+        if ("Good".equalsIgnoreCase(statusLabel.getText())) {
+            scanCodeField.requestFocus();
+            scanCodeField.selectAll();
+        }
+
 
         if (pendingHistory != null) {
             historyService.deleteById(pendingHistory.getId());
@@ -309,7 +314,7 @@ public class ScannerController {
         showStatus("Good", "#32CD32");
         disableAllButtons();
         scanButton.setDisable(false);
-        btnReScan.setDisable(false);
+        //btnReScan.setDisable(false);
         scanCodeField.requestFocus();
         scanCodeField.selectAll();
     }

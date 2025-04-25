@@ -20,8 +20,8 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
 
     @Override
     public void add(History history) {
-        String sql = "INSERT INTO History (InvoiceId, Date, Time, Maker, MakerPN, SapPN, Quantity, EmployeeId, Status, ScanCode) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO History (InvoiceId, Date, Time, Maker, MakerPN, SapPN, Quantity, EmployeeId, Status, ScanCode, MSL) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 history.getInvoiceId(),
                 history.getDate(),
@@ -32,7 +32,8 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
                 history.getQuantity(),
                 history.getEmployeeId(),
                 history.getStatus(),
-                history.getScanCode()
+                history.getScanCode(),
+                history.getMSL()
         );
     }
 
@@ -78,6 +79,10 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
             sql.append("ScanCode = ?, ");
             params.add(history.getScanCode());
         }
+        if (history.getMSL() != null && !history.getMSL().equals("")) {
+            sql.append("MSL = ?, ");
+            params.add(history.getMSL());
+        }
 
         // Loại bỏ dấu phẩy cuối câu SQL
         sql.setLength(sql.length() - 2);
@@ -104,7 +109,7 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
     }
 
     @Override
-    public List<History> search(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date) {
+    public List<History> search(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date, String MSL) {
         StringBuilder sql = new StringBuilder(
                 "SELECT h.* FROM History h LEFT JOIN Invoice i ON h.InvoiceId = i.Id WHERE 1=1 "
         );
@@ -136,6 +141,10 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
             sql.append("AND h.Date = ? ");
             params.add(date);
         }
+        if (MSL != null) {
+            sql.append("AND h.MSL = ? ");
+            params.add(MSL);
+        }
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), new HistoryRowMapper());
     }
@@ -164,7 +173,8 @@ public class HistoryRepositoryImpl extends GenericRepositoryImpl<History> implem
                     rs.getInt("Quantity"),
                     rs.getString("EmployeeId"),
                     rs.getString("Status"),
-                    rs.getString("ScanCode")
+                    rs.getString("ScanCode"),
+                    rs.getString("MSL")
             );
         }
     }

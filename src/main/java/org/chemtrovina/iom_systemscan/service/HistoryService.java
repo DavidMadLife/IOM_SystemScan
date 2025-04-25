@@ -23,7 +23,7 @@ public interface HistoryService {
     List<HistorySummaryViewModel> getSummaryBySapPN();
     boolean isValidMakerPN(String makerPN);
 
-    List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date);
+    List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date, String MSL);
 
     boolean isScanning(String scanCode, String makerPN);
 

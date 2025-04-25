@@ -7,6 +7,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.chemtrovina.iom_systemscan.config.DataSourceConfig;
 import org.chemtrovina.iom_systemscan.model.History;
 import org.chemtrovina.iom_systemscan.model.MOQ;
@@ -20,6 +24,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,26 +39,29 @@ public class StatisticalFeatureController {
     @FXML private TableColumn<History, String> sapPNColumn;
     @FXML private TableColumn<History, Integer> quantityColumn;
     @FXML private TableColumn<History, String> scanCodeColumn;
+    @FXML private TableColumn<History, String> mslColumn;
+    @FXML private TableColumn<History, String> timeColumn;
 
     @FXML private TextField invoiceNoField;
     @FXML private TextField makerField;
     @FXML private TextField pnField;
     @FXML private TextField sapField;
     @FXML private DatePicker dateTimePicker;
+    @FXML private TextField mslField;
 
     @FXML private CheckBox invoiceNoCheckBox;
     @FXML private CheckBox makerCheckBox;
     @FXML private CheckBox pnCheckBox;
     @FXML private CheckBox sapCheckBox;
     @FXML private CheckBox dateCheckBox;
+    @FXML private CheckBox mslCheckBox;
 
     @FXML private Button searchBtn;
+    @FXML private Button clearBtn;
+    @FXML private Button importExcelBtn;
 
     @FXML private Text reelText;
     @FXML private Text quantityText;
-
-    @FXML private Button updateBtn;
-    @FXML private Button deleteBtn;
 
     private HistoryService historyService;
     private final ObservableList<History> historyObservableList = FXCollections.observableArrayList(); // Inject nếu dùng DI
@@ -86,11 +96,13 @@ public class StatisticalFeatureController {
 
         // Gán các cột với property trong HistoryEntrance
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date")); // cần có field date dạng String
+        timeColumn.setCellValueFactory(new PropertyValueFactory<>("time"));
         makerColumn.setCellValueFactory(new PropertyValueFactory<>("maker"));
         makerPNColumn.setCellValueFactory(new PropertyValueFactory<>("makerPN"));
         sapPNColumn.setCellValueFactory(new PropertyValueFactory<>("sapPN"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         scanCodeColumn.setCellValueFactory(new PropertyValueFactory<>("scanCode"));
+        mslColumn.setCellValueFactory(new PropertyValueFactory<>("MSL"));
 
         DataSource dataSource = DataSourceConfig.getDataSource();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
@@ -100,8 +112,28 @@ public class StatisticalFeatureController {
 
         searchBtn.setOnAction(e -> onSearch());
 
-        /*deleteBtn.setOnAction(e -> onDeleteSelectedRow());
-        updateBtn.setOnAction(e -> onUpdateSelectedRow());*/
+        clearBtn.setOnAction(e -> {
+            invoiceNoField.clear();
+            makerField.clear();
+            pnField.clear();
+            sapField.clear();
+            dateTimePicker.setValue(null);
+
+            invoiceNoCheckBox.setSelected(false);
+            makerCheckBox.setSelected(false);
+            pnCheckBox.setSelected(false);
+            sapCheckBox.setSelected(false);
+            dateCheckBox.setSelected(false);
+
+            historyDateTableView.getItems().clear();
+            reelText.setText("0");
+            quantityText.setText("0");
+        });
+
+
+        importExcelBtn.setOnAction(e -> onExportExcel());
+
+
     }
 
     private void onSearch() {
@@ -110,8 +142,9 @@ public class StatisticalFeatureController {
         String pn = pnCheckBox.isSelected() ? pnField.getText() : null;
         String sap = sapCheckBox.isSelected() ? sapField.getText() : null;
         LocalDate date = dateCheckBox.isSelected() ? dateTimePicker.getValue() : null;
+        String MSL = mslCheckBox.isSelected() ? mslField.getText() : null;
 
-        List<History> result = historyService.searchHistory(invoiceNo, maker, pn, sap, date);
+        List<History> result = historyService.searchHistory(invoiceNo, maker, pn, sap, date, MSL);
 
         ObservableList<History> observableList = FXCollections.observableArrayList(result);
         historyDateTableView.setItems(observableList);
@@ -160,7 +193,7 @@ public class StatisticalFeatureController {
                     selected.setQuantity(updatedQuantity);
                     return selected;
                 } catch (NumberFormatException e) {
-                    showAlert(Alert.AlertType.ERROR, "Lỗi định dạng", "Quantity phải là số nguyên.");
+                    showAlert(Alert.AlertType.ERROR, "Wrong format", "Quantity must be Integer.");
                 }
             }
             return null;
@@ -169,25 +202,108 @@ public class StatisticalFeatureController {
         dialog.showAndWait().ifPresent(updated -> {
             historyService.updateHistory(updated);
             onSearch(); // Refresh table
-            showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật bản ghi thành công.");
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Update successful.");
         });
     }
 
     private void showDeleteConfirm(History selected) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận xóa");
-        confirm.setHeaderText("Bạn có chắc muốn xóa bản ghi này?");
+        confirm.setTitle("Accpet to delete");
+        confirm.setHeaderText("Are you accepted?");
         confirm.setContentText("ScanCode: " + selected.getScanCode());
 
         confirm.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
                 historyService.deleteById(selected.getId());
                 onSearch(); // Refresh lại view
-                showAlert(Alert.AlertType.INFORMATION, "Đã xóa", "Xóa bản ghi thành công.");
+                showAlert(Alert.AlertType.INFORMATION, "Deleted", "Delete success.");
             }
         });
     }
 
+    private void onExportExcel() {
+        List<History> dataToExport = historyDateTableView.getItems();
+        if (dataToExport.isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, "Alert", "No data to be exported.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Please choose location to export Excel");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(historyDateTableView.getScene().getWindow());
+
+        if (file != null) {
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("History Scan");
+
+                CellStyle centerStyle = workbook.createCellStyle();
+                centerStyle.setAlignment(HorizontalAlignment.CENTER); // Căn giữa ngang
+                centerStyle.setVerticalAlignment(VerticalAlignment.CENTER); // (tuỳ chọn) Căn giữa dọc
+
+                // Header
+                Row headerRow = sheet.createRow(0);
+                String[] headers = {"No", "Maker", "Part No", "SAP", "Date", "Time", "Quantity", "MSL"};
+                for (int i = 0; i < headers.length; i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                }
+
+                // Data rows
+                for (int i = 0; i < dataToExport.size(); i++) {
+                    History h = dataToExport.get(i);
+                    Row row = sheet.createRow(i + 1);
+
+                    Cell cell0 = row.createCell(0);
+                    cell0.setCellValue(i + 1);
+                    cell0.setCellStyle(centerStyle);
+
+                    Cell cell1 = row.createCell(1);
+                    cell1.setCellValue(h.getMaker());
+                    cell1.setCellStyle(centerStyle);
+
+                    Cell cell2 = row.createCell(2);
+                    cell2.setCellValue(h.getMakerPN());
+                    cell2.setCellStyle(centerStyle);
+
+                    Cell cell3 = row.createCell(3);
+                    cell3.setCellValue(h.getSapPN());
+                    cell3.setCellStyle(centerStyle);
+
+                    Cell cell4 = row.createCell(4);
+                    cell4.setCellValue(h.getDate().toString());
+                    cell4.setCellStyle(centerStyle);
+
+                    Cell cell5 = row.createCell(5);
+                    cell5.setCellValue(h.getTime().toString());
+                    cell5.setCellStyle(centerStyle);
+
+                    Cell cell6 = row.createCell(6);
+                    cell6.setCellValue(h.getQuantity());
+                    cell6.setCellStyle(centerStyle);
+
+                    Cell cell7 = row.createCell(7);
+                    cell7.setCellValue(h.getMSL());
+                    cell7.setCellStyle(centerStyle);
+                }
+
+                // Auto-size columns
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                // Save
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    workbook.write(fos);
+                }
+
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Export successful.");
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Errors", "Can't to create file: " + e.getMessage());
+            }
+        }
+
+    }
 
 
 
@@ -204,7 +320,6 @@ public class StatisticalFeatureController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 
 
 }

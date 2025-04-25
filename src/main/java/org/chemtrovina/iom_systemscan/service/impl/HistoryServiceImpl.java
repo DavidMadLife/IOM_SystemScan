@@ -78,6 +78,7 @@ public class  HistoryServiceImpl implements HistoryService {
                 history.setTime(currentTime);
                 history.setEmployeeId(employeeId);
                 history.setScanCode(scanCode);
+                history.setMSL(moq.getMsql());
                 history.setStatus("Scanned");
 
                 addHistory(history);
@@ -128,8 +129,8 @@ public class  HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date) {
-        return historyRepository.search(invoiceNo, maker, makerPN, sapPN, date);
+    public List<History> searchHistory(String invoiceNo, String maker, String makerPN, String sapPN, LocalDate date, String MSL) {
+        return historyRepository.search(invoiceNo, maker, makerPN, sapPN, date, MSL);
     }
 
     @Override
