@@ -305,13 +305,6 @@ public class StatisticalFeatureController {
 
     }
 
-
-
-
-
-
-
-
     //Alert
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);

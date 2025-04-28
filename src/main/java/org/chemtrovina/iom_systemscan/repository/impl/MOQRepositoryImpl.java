@@ -1,5 +1,7 @@
 package org.chemtrovina.iom_systemscan.repository.impl;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,24 +28,26 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
 
     @Override
     public void add(MOQ moq) {
-        String sql = "INSERT INTO MOQ (Maker, MakerPN, SapPN, MOQ, MSQL) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                moq.getMaker(),
-                moq.getMakerPN(),
-                moq.getSapPN(),
-                moq.getMoq(),
-                moq.getMsql());
-    }
-
-    @Override
-    public void update(MOQ moq) {
-        String sql = "UPDATE MOQ SET Maker = ?, MakerPN = ?, SapPN = ?, MOQ = ?, MSQL = ? WHERE Id = ?";
+        String sql = "INSERT INTO MOQ (Maker, MakerPN, SapPN, MOQ, MSQL, Spec) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 moq.getMaker(),
                 moq.getMakerPN(),
                 moq.getSapPN(),
                 moq.getMoq(),
                 moq.getMsql(),
+                moq.getSpec());
+    }
+
+    @Override
+    public void update(MOQ moq) {
+        String sql = "UPDATE MOQ SET Maker = ?, MakerPN = ?, SapPN = ?, MOQ = ?, MSQL = ?, Spec = ? WHERE Id = ?";
+        jdbcTemplate.update(sql,
+                moq.getMaker(),
+                moq.getMakerPN(),
+                moq.getSapPN(),
+                moq.getMoq(),
+                moq.getMsql(),
+                moq.getSpec(),
                 moq.getId());
     }
 
@@ -81,7 +85,7 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
         }
         if (MSL != null && !MSL.isBlank()) {
             sql.append("AND MSQL = ? ");
-            params.add(Integer.parseInt(MSL));
+            params.add(MSL);
         }
 
         return jdbcTemplate.query(sql.toString(), params.toArray(), new  MOQRowMapper());
@@ -108,14 +112,18 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
                 if (row == null) continue;
 
                 MOQ moq = new MOQ();
-                moq.setSapPN(row.getCell(0).getStringCellValue());
-                moq.setMaker(row.getCell(1).getStringCellValue());
-                moq.setMakerPN(row.getCell(2).getStringCellValue());
-                moq.setMoq((int) row.getCell(3).getNumericCellValue());
-                moq.setMsql(row.getCell(4).getStringCellValue());
+                moq.setSapPN(getCellValueAsString(row.getCell(0)));
+                moq.setSpec(getCellValueAsString(row.getCell(1)));
+                moq.setMaker(getCellValueAsString(row.getCell(3)));
+                moq.setMakerPN(getCellValueAsString(row.getCell(2)));
+                moq.setMoq((int) getCellValueAsNumeric(row.getCell(4)));
+                moq.setMsql(getCellValueAsString(row.getCell(5)));
 
                 moqList.add(moq);
             }
+            System.out.println("Đọc được " + moqList.size() + " dòng từ Excel");
+
+            //saveAll(moqList);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -123,6 +131,89 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
         return moqList;
     }
 
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                return String.valueOf((int) cell.getNumericCellValue()); // nếu muốn hiển thị không có .0
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            case BLANK:
+                return "";
+            default:
+                return "";
+        }
+    }
+
+    private double getCellValueAsNumeric(Cell cell) {
+        if (cell == null) {
+            return 0;
+        }
+        if (cell.getCellType() == CellType.NUMERIC) {
+            return cell.getNumericCellValue();
+        }
+        if (cell.getCellType() == CellType.STRING) {
+            try {
+                return Double.parseDouble(cell.getStringCellValue());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    //Save all
+    @Override
+    public void saveAll(List<MOQ> moqList) {
+        String sql = "INSERT INTO MOQ (Maker, MakerPN, SapPN, MOQ, MSQL, Spec) VALUES (?, ?, ?, ?, ?, ?)";
+
+        jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(java.sql.PreparedStatement ps, int i) throws SQLException {
+                MOQ moq = moqList.get(i);
+                ps.setString(1, moq.getMaker());
+                ps.setString(2, moq.getMakerPN());
+                ps.setString(3, moq.getSapPN());
+                ps.setInt(4, moq.getMoq());
+                ps.setString(5, moq.getMsql());
+                ps.setString(6, moq.getSpec());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return moqList.size();
+            }
+        });
+    }
+
+    public void updateAll(List<MOQ> moqList) {
+        String sql = "UPDATE MOQ SET Maker = ?, MakerPN = ?, SapPN = ?, MOQ = ?, MSQL = ?, Spec = ? WHERE Id = ?";
+
+        jdbcTemplate.batchUpdate(sql, new org.springframework.jdbc.core.BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(java.sql.PreparedStatement ps, int i) throws SQLException {
+                MOQ moq = moqList.get(i);
+                ps.setString(1, moq.getMaker());
+                ps.setString(2, moq.getMakerPN());
+                ps.setString(3, moq.getSapPN());
+                ps.setInt(4, moq.getMoq());
+                ps.setString(5, moq.getMsql());
+                ps.setString(6, moq.getSpec());
+                ps.setInt(7, moq.getId());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return moqList.size();
+            }
+        });
+    }
 
     static class MOQRowMapper implements RowMapper<MOQ> {
         @Override
@@ -133,10 +224,9 @@ public class MOQRepositoryImpl extends GenericRepositoryImpl<MOQ> implements MOQ
                     rs.getString("MakerPN"),
                     rs.getString("SapPN"),
                     rs.getInt("MOQ"),
-                    rs.getString("MSQL")
+                    rs.getString("MSQL"),
+                    rs.getString("Spec")
             );
         }
     }
-
-
 }

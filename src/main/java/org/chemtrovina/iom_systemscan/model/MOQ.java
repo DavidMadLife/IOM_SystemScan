@@ -7,17 +7,19 @@ public class MOQ {
     private String sapPN;
     private Integer moq;
     private String msql;
+    private String spec;
 
     public MOQ() {
     }
 
-    public MOQ(int id, String maker, String makerPN, String sapPN, Integer moq, String msql) {
+    public MOQ(int id, String maker, String makerPN, String sapPN, Integer moq, String msql, String spec) {
         this.id = id;
         this.maker = maker;
         this.makerPN = makerPN;
         this.sapPN = sapPN;
         this.moq = moq;
         this.msql = msql;
+        this.spec = spec;
     }
 
     // Getter và Setter methods
@@ -68,6 +70,8 @@ public class MOQ {
     public void setMsql(String msql) {
         this.msql = msql;
     }
+    public String getSpec() {return spec;}
+    public void setSpec(String spec) {this.spec = spec;}
 
     @Override
     public String toString() {
